@@ -1,0 +1,49 @@
+You are a cyber threat intelligence analyst. The normal extraction path produced zero or near-zero validated triples from this CTI report. Re-read the report and recover only the clearest benchmark-style triples.
+
+## Existing Triples
+{% if existing_triples %}
+The following triples were already extracted. Do NOT repeat them.
+{% for t in existing_triples %}
+- ({{ t.subject }}, {{ t.relation.value }}, {{ t.object }})
+{% endfor %}
+{% else %}
+No reliable triples survived the previous pass.
+{% endif %}
+
+## Fallback Goal
+Extract only the strongest, directly supported triples, prioritizing:
+- threat actor or campaign uses malware, tools, techniques, or vulnerabilities
+- malware or actor exploits vulnerabilities
+- malware, actors, or campaigns target organizations, software, infrastructure, or locations
+- malware or campaigns deliver or drop payloads
+- attribution links between malware, campaigns, and threat actors
+- clear geographic links tied to actors, victims, or infrastructure
+
+## Output Format
+Return exactly one JSON object:
+```json
+{
+  "triples": [
+    {
+      "subject": "entity name as written in the text",
+      "subject_type": "ThreatActor|Malware|Tool|Campaign|Vulnerability|Technique|Organization|Location|IOC|Infrastructure|Software|Other",
+      "relation": "uses|targets|exploits|delivers|communicates_with|drops|attributed_to|associated_with|variant_of|located_in|mitigated_by|related_to",
+      "object": "entity name as written in the text",
+      "object_type": "ThreatActor|Malware|Tool|Campaign|Vulnerability|Technique|Organization|Location|IOC|Infrastructure|Software|Other",
+      "evidence": "exact sentence or exact phrase from the text"
+    }
+  ]
+}
+```
+
+## Rules
+1. Output JSON only. No markdown fences or explanation.
+2. Return at most {{ max_fallback_triples }} triples.
+3. Every triple must be directly supported by the text and must include exact evidence.
+4. Prefer the most specific relation available. Avoid `related_to` unless no other schema relation fits.
+5. Avoid generic entities like "attackers", "victims", "malware", or "campaign" unless the text truly gives no better name.
+6. Focus on precision over coverage. Skip uncertain triples.
+7. If nothing reliable can be recovered, return {"triples": []}.
+
+## Report
+{{ text }}

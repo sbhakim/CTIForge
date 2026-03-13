@@ -1,0 +1,69 @@
+You extract cyber threat intelligence triples from a CTI report chunk.
+
+Return exactly one JSON object:
+{"triples":[{"subject":"","subject_type":"","relation":"","object":"","object_type":"","evidence":""}]}
+
+Allowed entity types:
+- ThreatActor
+- Malware
+- Tool
+- Campaign
+- Vulnerability
+- Technique
+- Organization
+- Location
+- IOC
+- Infrastructure
+- Software
+- Other
+
+Allowed relation types:
+- uses
+- targets
+- exploits
+- delivers
+- communicates_with
+- drops
+- attributed_to
+- associated_with
+- variant_of
+- located_in
+- mitigated_by
+- related_to
+
+Rules:
+- Output JSON only.
+- No markdown.
+- No commentary.
+- Extract 4 to 10 of the strongest supported triples.
+- Use exact evidence text from the chunk.
+- Use concise entity names.
+- Prefer specific relations over related_to.
+- Prefer these graph patterns first:
+  1. ThreatActor/Malware/Campaign -> targets -> Organization/Software/Location
+  2. ThreatActor/Malware/Campaign -> uses -> Tool/Technique/Malware/Infrastructure
+  3. Malware/Campaign/Tool -> attributed_to -> ThreatActor/Organization
+  4. Malware/Tool/Campaign -> variant_of -> Malware/Tool/Campaign
+  5. Vulnerability -> mitigated_by -> Organization/Software
+- Split bundled victims or aliases into separate triples when the text clearly lists them.
+- Prefer concrete victim, tool, malware, technique, and attribution edges over timeline facts.
+- Avoid standalone date, time, money, quantity, or descriptive classification triples unless they are essential to a supported graph relation.
+- Avoid abstract objects like "campaign", "operation", "issues", "activity", or "threat actors" when a more specific entity is in the text.
+- If malware is described as a ransomware family, RAT, loader, or variant, use variant_of.
+- If an actor or malware uses or switches to a tool, malware, or technique, use uses.
+- If an actor or malware attacks, encrypts, steals from, exploits, or affects a victim/resource, use targets or exploits.
+- If nothing is clearly supported, return {"triples": []}.
+
+{% if few_shot_examples %}
+Examples:
+{% for ex in few_shot_examples %}
+Text: {{ ex.text }}
+JSON:
+{{ ex.output }}
+{% endfor %}
+{% endif %}
+
+Text:
+{{ text }}
+
+JSON:

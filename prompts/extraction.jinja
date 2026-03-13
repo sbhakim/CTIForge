@@ -1,0 +1,80 @@
+You are a cyber threat intelligence analyst. Extract ALL structured knowledge triples from the following CTI text.
+
+## Entity Types
+You must classify each entity as one of these types:
+- ThreatActor: APT groups, hacker groups, nation-state actors, threat groups (e.g., APT28, Lazarus Group, FIN7, Sandworm). Includes any named adversary group or alias.
+- Malware: malicious software families — ransomware, trojans, backdoors, worms, RATs, botnets, wipers, stealers, loaders, droppers (e.g., Emotet, TrickBot, Conti, WannaCry, Cobalt Strike BEACON payload).
+- Tool: legitimate or dual-use tools used by attackers or defenders (e.g., Cobalt Strike, Mimikatz, Metasploit, PowerShell, PsExec, BloodHound, Nmap). When software is used as a hacking instrument, classify as Tool.
+- Campaign: named attack campaigns or operations (e.g., "Operation Cobalt Kitty", "SolarWinds campaign").
+- Vulnerability: CVE identifiers or described security weaknesses (e.g., CVE-2024-1234, "zero-day in Chrome", "buffer overflow").
+- Technique: specific attack methods, behaviors, or capabilities mapped to ATT&CK techniques (e.g., "credential dumping", "spear-phishing", "DLL sideloading", "lateral movement", "data exfiltration"). If malware performs a specific action, that action is a Technique.
+- Organization: companies, agencies, government bodies, security vendors, research groups, victim organizations (e.g., Microsoft, CISA, SolarWinds, Colonial Pipeline).
+- Location: countries, regions, cities (e.g., China, Eastern Europe, Ukraine).
+- IOC: indicators of compromise — IP addresses, domains, URLs, file hashes (MD5/SHA1/SHA256), email addresses, file names with extensions (.exe, .dll, .ps1), registry keys.
+- Infrastructure: C2 servers, hosting providers, botnets, cloud services, networks used for attacks. Use when the text emphasizes the server/network role rather than the indicator value.
+- Software: operating systems, applications, platforms, programming languages, development frameworks (e.g., Windows, Linux, macOS, Chrome, Python, Exchange Server, Apache).
+- Other: AVOID this type. Try harder to classify into one of the above types. Only use for truly unclassifiable abstract concepts.
+
+## Relation Types
+Use ONLY these relation types — choose the MOST SPECIFIC one that fits:
+- uses: subject employs, utilizes, leverages, executes, or is written/developed in the object. The subject is an actor/malware/tool and the object is a tool/technique/infrastructure/language (e.g., "APT28 uses Mimikatz", "malware uses PowerShell", "Quantum uses BazarCall", "attackers use social engineering", "malware is written in Rust" → (malware, uses, Rust))
+- targets: subject attacks, affects, victimizes, compromises, encrypts, steals from, or is directed at the object. This is the most common relation — use it whenever an attacker/malware acts upon a victim/system/resource (e.g., "Lazarus targets financial institutions", "ransomware encrypts files", "APT group targets defense sector", "Quantum targets Oracle")
+- exploits: subject ACTIVELY takes advantage of a specific vulnerability (CVE or described weakness). ONLY use for attacker/malware exploiting a vulnerability — NOT for discovering, reporting, or patching it (e.g., "attackers exploit CVE-2021-44228", "malware exploits zero-day in Chrome")
+- delivers: subject distributes or sends the object as a payload (e.g., "phishing campaign delivers Emotet", "actor delivers ransomware via email")
+- communicates_with: subject connects to, beacons to, or contacts the object for C2 (e.g., "malware communicates with 192.168.1.1")
+- drops: subject downloads, installs, writes, or deploys the object on disk (e.g., "loader drops ransomware payload", "Munchkin drops BlackCat")
+- attributed_to: subject is linked to, created by, developed by, or operated by the object. Use for authorship, development, and operational links. (e.g., "Stuxnet attributed to NSA", "campaign attributed to APT29", "malware attributed to Lazarus Group", "tool developed by vendor" → (tool, attributed_to, vendor))
+- associated_with: general association — observations, discoveries, co-occurrence, or non-directional links. Use when entities appear together without a clear directional action. Use for DISCOVERY/OBSERVATION actions: "discovered", "identified", "observed", "reported", "analyzed", "investigated". Also for data-type associations like "steals email data", "exfiltrates credentials". (e.g., "TAG discovered exploit chain" → (TAG, associated_with, exploit chain), "researchers observed X alongside Y", "Citizen Lab identified spyware" → (Citizen Lab, associated_with, spyware))
+- variant_of: subject IS A type/version/family/rebranding of the object. Use whenever malware is CLASSIFIED — "X is a RAT" means (X, variant_of, RAT), "X is a ransomware family" means (X, variant_of, ransomware). Also for evolution: "X evolved from Y", "X is a fork of Y". (e.g., "Agent Tesla is a remote access Trojan", "DarkSide is a variant of REvil", "3AM is a ransomware", "Quantum Locker evolved from MountLocker")
+- located_in: subject is geographically based in, originates from, or is hosted in the object location. Extract this for EVERY country/region mention linked to an actor, organization, or infrastructure. (e.g., "APT28 located in Russia", "infrastructure hosted in Eastern Europe", "targeting organizations in Israel", "based in Southeast Asia")
+- mitigated_by: subject vulnerability or threat is patched, fixed, or addressed by the object (e.g., "CVE-2021-34527 mitigated by KB5004945", "Apple mitigated CVE-2023-41991")
+- related_to: use ONLY as absolute last resort when no other type fits. STOP before using this — could it be "associated_with" (for discoveries/observations), "uses" (for employment/written-in), "targets" (for actions upon), "attributed_to" (for authorship/creation), or "variant_of" (for classification)? If ANY of those fit, use them instead.
+
+## Output Format
+Return a JSON object with this exact structure:
+```json
+{
+  "triples": [
+    {
+      "subject": "entity name as it appears in text",
+      "subject_type": "one of the entity types above",
+      "relation": "one of the relation types above",
+      "object": "entity name as it appears in text",
+      "object_type": "one of the entity types above",
+      "evidence": "the exact sentence or phrase from the text that supports this triple"
+    }
+  ]
+}
+```
+
+## Rules
+1. Extract the most IMPORTANT triples supported by the text — focus on core threat relationships. Extract 8-15 triples per chunk, prioritizing: threat actor↔malware, malware↔vulnerability, actor↔technique, malware↔infrastructure, and vulnerability↔patch relationships.
+2. Every triple MUST have an evidence span copied from the text.
+3. Use CONCISE entity names as they appear in the text. Do NOT append qualifiers — extract "0-day exploit chain" not "0-day exploit chain for iPhones". If a qualifier describes a separate entity, extract it as a separate triple.
+4. NEVER use "related_to" if ANY specific relation applies. Ask yourself: does the subject USE, TARGET, EXPLOIT, DELIVER, DROP, COMMUNICATE WITH, or is it ATTRIBUTED TO / A VARIANT OF the object? If yes, use that relation. Only use "related_to" for truly abstract connections with no action.
+5. NEVER use "associated_with" when a directional relation exists. "X observed using Y" is "uses", not "associated_with". "X linked to Y" where X is malware/campaign and Y is a threat actor is "attributed_to".
+6. Extract entity-to-entity relationships, not entity-to-description.
+7. Direction matters: the subject performs the action, the object receives it. "APT28 uses Mimikatz" not "Mimikatz uses APT28".
+8. For patches and fixes: if "Company patches CVE-X" or "CVE-X fixed in version Y", use (CVE-X, mitigated_by, Company/version). The vulnerability is the subject, the fix is the object. Do NOT use "exploits" for patching.
+9. If malware stops services, encrypts files, deletes data, or disrupts systems, use "targets" (the malware targets those resources).
+10. If malware is described as a type/variant of another malware family, use variant_of. "X is a RAT/trojan/ransomware/backdoor/worm/stealer/loader/wiper" → (X, variant_of, RAT/trojan/ransomware/etc). Also extract alias/rebrand chains: "X rebranded as Y", "X also known as Y", "X evolved from Y" → (X, variant_of, Y).
+11. If an actor deploys, switches to, or attempts malware, use "uses" or "delivers" (not "associated_with").
+12. Extract geographic relationships: if a country or region is mentioned in connection with an actor, victim, or infrastructure, extract a located_in or targets triple.
+13. Extract data targets: if malware steals, exfiltrates, or accesses specific data types (credentials, email, tokens), extract (malware, targets, data_type).
+14. Do not extract more than 15 triples per text chunk.
+15. If no triples can be extracted, return {"triples": []}.
+
+{% if few_shot_examples %}
+## Examples
+{% for ex in few_shot_examples %}
+### Example {{ loop.index }}
+Text: {{ ex.text }}
+Output:
+```json
+{{ ex.output }}
+```
+{% endfor %}
+{% endif %}
+
+## Text to Analyze
+{{ text }}

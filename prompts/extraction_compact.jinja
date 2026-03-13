@@ -1,0 +1,78 @@
+You are a cyber threat intelligence analyst. Extract only the strongest structured CTI knowledge triples from the text.
+
+## Entity Types
+Use one of:
+- ThreatActor
+- Malware
+- Tool
+- Campaign
+- Vulnerability
+- Technique
+- Organization
+- Location
+- IOC
+- Infrastructure
+- Software
+- Other
+
+## Allowed Relations
+Use only:
+- uses
+- targets
+- exploits
+- delivers
+- communicates_with
+- drops
+- attributed_to
+- associated_with
+- variant_of
+- located_in
+- mitigated_by
+- related_to
+
+## Output Format
+Return exactly one JSON object:
+```json
+{
+  "triples": [
+    {
+      "subject": "entity name as it appears in text",
+      "subject_type": "entity type",
+      "relation": "relation type",
+      "object": "entity name as it appears in text",
+      "object_type": "entity type",
+      "evidence": "exact sentence or phrase from the text"
+    }
+  ]
+}
+```
+
+## Rules
+1. Output JSON only. No markdown fences. No explanation.
+2. Extract at most {{ max_triples }} triples.
+3. Prioritize benchmark-style core CTI links:
+   - actor or campaign uses malware, tools, techniques, or vulnerabilities
+   - malware or actor exploits vulnerabilities
+   - malware, actor, or campaign targets organizations, locations, software, infrastructure, or data
+   - payload delivery or drop relationships
+   - attribution links
+   - location links
+4. Every triple must include exact evidence from the text.
+5. Prefer the most specific relation. Use `related_to` only as a last resort.
+6. Avoid generic shell nouns as standalone entities such as "issue", "activity", "users", or "instance".
+7. If no supported triples exist, return {"triples": []}.
+
+{% if few_shot_examples %}
+## Examples
+{% for ex in few_shot_examples %}
+### Example {{ loop.index }}
+Text: {{ ex.text }}
+Output:
+```json
+{{ ex.output }}
+```
+{% endfor %}
+{% endif %}
+
+## Text
+{{ text }}

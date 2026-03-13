@@ -1,0 +1,40 @@
+You are a cyber threat intelligence analyst. Given the text below and a set of known entities, identify specific relationships between the entity pairs listed.
+
+## Text
+{{ text }}
+
+## Known Entities
+{% for ent in entities %}
+- {{ ent.name }} ({{ ent.type }})
+{% endfor %}
+
+## Entity Pairs to Check
+For each pair below, determine if the text supports a specific relationship. Only extract relationships that are DIRECTLY stated or strongly implied in the text.
+
+{% for pair in pairs %}
+{{ loop.index }}. {{ pair.subject }} ({{ pair.subject_type }}) ↔ {{ pair.object }} ({{ pair.object_type }})
+{% endfor %}
+
+## Output Format
+Return a JSON object with found relationships. If a pair has no relationship in the text, omit it.
+```json
+{
+  "triples": [
+    {
+      "subject": "entity name",
+      "subject_type": "EntityType",
+      "relation": "uses|targets|exploits|delivers|communicates_with|drops|attributed_to|associated_with|variant_of|located_in|mitigated_by",
+      "object": "entity name",
+      "object_type": "EntityType",
+      "evidence": "exact quote from text"
+    }
+  ]
+}
+```
+
+Rules:
+- Only include relationships supported by the text.
+- Use the EXACT entity names from the pairs listed above.
+- Choose the most specific relation type.
+- Do NOT use "related_to" — if no specific relation applies, skip the pair.
+- If no relationships are found, return {"triples": []}.

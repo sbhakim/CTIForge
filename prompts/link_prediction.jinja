@@ -1,0 +1,35 @@
+You are a cyber threat intelligence analyst. Given the context below and a set of already-extracted knowledge graph triples, infer ONE missing relationship between two specific entities.
+
+## Context
+{{ text }}
+
+## Already Extracted Triples
+{% for t in existing_triples %}
+- ({{ t.subject }} [{{ t.subject_type.value }}], {{ t.relation.value }}, {{ t.object }} [{{ t.object_type.value }}])
+{% endfor %}
+
+## Task
+The entity "{{ entity_a }}" ({{ type_a }}) and "{{ entity_b }}" ({{ type_b }}) appear in the same report but have no direct relationship in the extracted graph. Based on the context, what is their relationship?
+
+Return exactly one JSON object:
+```json
+{
+  "subject": "entity name",
+  "subject_type": "ThreatActor|Malware|Tool|Campaign|Vulnerability|Technique|Organization|Location|IOC|Infrastructure|Software|Other",
+  "relation": "uses|targets|exploits|delivers|communicates_with|drops|attributed_to|associated_with|variant_of|located_in|mitigated_by|related_to",
+  "object": "entity name",
+  "object_type": "ThreatActor|Malware|Tool|Campaign|Vulnerability|Technique|Organization|Location|IOC|Infrastructure|Software|Other",
+  "evidence": "exact quote from the context that supports this relationship"
+}
+```
+
+If no clear relationship exists between these two entities, return:
+```json
+{"skip": true}
+```
+
+Important:
+- The subject and object MUST be exactly "{{ entity_a }}" and "{{ entity_b }}" (in either order).
+- Choose the most specific relation type that applies.
+- Do NOT use "related_to" if any more specific relation fits.
+- Only infer relationships that are supported by the text.

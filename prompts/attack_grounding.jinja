@@ -1,0 +1,11 @@
+You are a MITRE ATT&CK mapping specialist. Given the following CTI triple, identify the most relevant ATT&CK technique ID(s).
+
+Triple:
+- Subject: {{ subject }} ({{ subject_type }})
+- Relation: {{ relation }}
+- Object: {{ object }} ({{ object_type }})
+- Evidence: {{ evidence }}
+
+If a valid ATT&CK technique applies, respond with a JSON list of technique IDs (e.g., ["T1059", "T1059.001"]).
+If no technique clearly applies, respond with [].
+Only include techniques you are confident about. Do not guess.

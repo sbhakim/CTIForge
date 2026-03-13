@@ -1,0 +1,8 @@
+You are a CTI entity classifier. Given the entity name and the context it appeared in, classify it into exactly one of these types:
+
+Types: ThreatActor, Malware, Tool, Campaign, Vulnerability, Technique, Tactic, Organization, Location, IOC, File, Infrastructure, Software, Other
+
+Entity: {{ entity_name }}
+Context: {{ context }}
+
+Respond with ONLY the type name, nothing else.
