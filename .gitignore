@@ -1,0 +1,259 @@
+# ---------------------------------------------------------------------------
+# Secrets and local environment  (HIGHEST PRIORITY -- never relax these)
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+id_rsa
+id_rsa.*
+id_ed25519*
+.netrc
+.npmrc
+secrets.yaml
+secrets.yml
+secrets.json
+credentials.json
+credentials.yaml
+creds.json
+service-account*.json
+*_credentials.json
+*.credentials
+.aws/
+.gcp/
+gcloud-*.json
+
+# ---------------------------------------------------------------------------
+# Data (third-party corpora — see README for how to obtain)
+# ---------------------------------------------------------------------------
+data/
+
+# ---------------------------------------------------------------------------
+# Run outputs, caches, and results
+# ---------------------------------------------------------------------------
+output/
+ctinexus_output/
+*.jsonl
+*_cached_triples.json
+judge_cache/
+
+# ---------------------------------------------------------------------------
+# Internal working notes and planning documents
+# ---------------------------------------------------------------------------
+improvement_trace.md
+comparison_framework.md
+future-upgrade-plan.md
+how-to-run-compile.md
+.backup_prepatch/
+
+# ---------------------------------------------------------------------------
+# One-off diagnostic and probe scripts (kept locally, not part of the pipeline)
+# ---------------------------------------------------------------------------
+lever*.py
+probe_*.py
+rescorer_*.py
+diagnose_*.py
+compare_same_backbone_149.py
+structural_metrics_149*.py
+
+# ---------------------------------------------------------------------------
+# Vendored JS assets emitted by graph visualisation
+# ---------------------------------------------------------------------------
+lib/
+
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ---------------------------------------------------------------------------
+# Editor / tooling
+# ---------------------------------------------------------------------------
+.claude/
+.claude
+.codex/
+.codex
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# ---------------------------------------------------------------------------
+# Notebooks
+# ---------------------------------------------------------------------------
+*.ipynb
+.ipynb_checkpoints/
+
+# ---------------------------------------------------------------------------
+# Model weights, adapters, and serialized artifacts
+# ---------------------------------------------------------------------------
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.gguf
+*.ggml
+*.onnx
+*.ckpt
+*.h5
+*.hdf5
+*.joblib
+*.pkl
+*.pickle
+*.npy
+*.npz
+*.parquet
+*.feather
+*.arrow
+*.db
+*.sqlite
+*.sqlite3
+models/
+checkpoints/
+adapters/
+.cache/
+huggingface/
+
+# ---------------------------------------------------------------------------
+# Archives
+# ---------------------------------------------------------------------------
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.gz
+*.bz2
+*.xz
+*.7z
+*.rar
+
+# ---------------------------------------------------------------------------
+# Experiment tracking and profiling
+# ---------------------------------------------------------------------------
+wandb/
+mlruns/
+runs/
+lightning_logs/
+tensorboard/
+events.out.tfevents.*
+*.prof
+*.lprof
+prof/
+
+# ---------------------------------------------------------------------------
+# Additional run-output directory names
+# ---------------------------------------------------------------------------
+results/
+eval_output/
+experiments/
+logs/
+tmp/
+scratch/
+debug_raw_generations/
+
+# ---------------------------------------------------------------------------
+# Manuscript: sources and build artifacts never belong in the code repository
+# ---------------------------------------------------------------------------
+*.tex
+*.bib
+*.cls
+*.sty
+*.bst
+Manuscript/
+manuscript/
+paper/
+# ---------------------------------------------------------------------------
+# LaTeX build artifacts
+# ---------------------------------------------------------------------------
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.out
+*.synctex.gz
+*.toc
+*.nav
+*.snm
+*.vrb
+
+# ---------------------------------------------------------------------------
+# Graph visualisation output
+# ---------------------------------------------------------------------------
+*.html
+!docs/**/*.html
+
+# ---------------------------------------------------------------------------
+# Editor, OS, and merge leftovers
+# ---------------------------------------------------------------------------
+*~
+*.tmp
+*.orig
+*.rej
+*.bak
+.*.swo
+Thumbs.db
+desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
+
+# ---------------------------------------------------------------------------
+# Escape hatches -- small fixtures the test suite may legitimately need
+# ---------------------------------------------------------------------------
+!tests/fixtures/**
+
+# ---------------------------------------------------------------------------
+# Images and rendered documents
+# ---------------------------------------------------------------------------
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.pdf
+*.eps
+
+# ---------------------------------------------------------------------------
+# Markdown: only README.md ships. Everything else is working notes.
+# ---------------------------------------------------------------------------
+*.md
+!README.md
+
+# ---------------------------------------------------------------------------
+# Assistant / editor tool configuration and session state
+# ---------------------------------------------------------------------------
+.claude/
+.claude
+CLAUDE.md
+.codex/
+.codex
+AGENTS.md
+GEMINI.md
+.cursor/
+.cursorrules
+.cursorignore
+.aider*
+.continue/
+.windsurfrules
+.roo/
+.cline*
+.github/copilot-instructions.md
+.specstory/
+.sourcegraph/
