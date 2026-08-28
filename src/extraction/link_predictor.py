@@ -1,7 +1,7 @@
 """Link prediction for disconnected subgraph components (inspired by CTI-Nexus LP).
 
 After initial extraction, the knowledge graph may have disconnected components
-— groups of entities with no path between them. This module identifies the
+- groups of entities with no path between them. This module identifies the
 main entity in each disconnected subgraph and asks the LLM to infer
 relationships between them, boosting recall.
 """
@@ -143,7 +143,7 @@ class LinkPredictor:
 
             try:
                 if self.provider.startswith("local_") or self.model.startswith("huggingface/"):
-                    # Skip LP for local models — too slow and unreliable
+                    # Skip LP for local models, too slow and unreliable
                     logger.debug("Skipping LP for local model")
                     continue
 

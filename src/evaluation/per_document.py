@@ -7,7 +7,7 @@ for CTIForge, +5.9% for CTI-Nexus (~+0.03 F1 each).
 
 Matching must be scoped to a document. These helpers do that while reusing
 whatever matcher function is passed in, so the matching semantics are
-unchanged -- only the scope is corrected.
+unchanged, only the scope is corrected.
 """
 
 from __future__ import annotations

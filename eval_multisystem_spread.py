@@ -2,7 +2,7 @@
 """Protocol sensitivity across ten systems on one fixed backbone.
 
 `eval_protocol_spread.py` varies the matcher over two systems and finds a 0.54
-F1 swing -- but CTI-Nexus wins under every protocol, so it can show magnitude and
+F1 swing, but CTI-Nexus wins under every protocol, so it can show magnitude and
 not rank reversal. This extends the same question to ten systems.
 
 Data: GRID's released prediction cache (Huang et al., arXiv 2605.16714),
@@ -12,7 +12,7 @@ verified subset of our 149-document CTI-Nexus benchmark.
 
 Why this cache and not our own: every system in it was run on the SAME backbone
 (Qwen3-4B-Instruct-2507). Backbone is therefore held constant and the only thing
-varying is the matcher -- exactly the control this question needs. The same
+varying is the matcher, exactly the control this question needs. The same
 property makes the cache USELESS for claiming one pipeline beats another, and it
 is not used for that here.
 
@@ -49,9 +49,7 @@ DISPLAY = {
 }
 
 
-# --------------------------------------------------------------------------
 # Protocols: does predicted edge `p` match gold edge `g`?
-# --------------------------------------------------------------------------
 
 def m_exact(p, g) -> bool:
     return (_normalize(p[0]), _normalize(p[1]), _normalize(p[2])) == \
@@ -144,7 +142,7 @@ def _as_list(v) -> list[str]:
     A handful of grid_end2end edges carry a list-valued object, e.g.
     obj = ['.mallox', '.xollam'], which genuinely encodes two facts. Expanding
     is the fair reading; stringifying the list would make both unmatchable.
-    Affects 3 of 810 edges in one system -- immaterial, but handled explicitly
+    Affects 3 of 810 edges in one system, immaterial, but handled explicitly
     so it is not silently mangled.
     """
     if isinstance(v, str):
@@ -195,8 +193,8 @@ def load_articles() -> dict[str, str]:
 def judge_f1(preds_by_doc, gold_by_doc, articles, judge) -> float:
     """LLM-judge protocol, micro-averaged over documents.
 
-    This is the only protocol with measured human agreement (Section 15).
-    Responses are cached to disk, so re-runs are free.
+    The only protocol here with measured agreement against human judgement.
+    Responses are cached to disk, so re-runs cost nothing.
     """
     from src.evaluation.llm_judge import judge_documents
     items = [(preds_by_doc.get(doc, []), golds, articles.get(doc, ""))
@@ -263,7 +261,7 @@ def main():
         judge_stats = {"model": args.judge_model, **judge.stats, **judge.estimate_cost()}
         print(f"\n  judge usage: {judge_stats}")
         if args.judge_dry_run:
-            print("  (dry run -- no API calls made, judge column is meaningless)")
+            print("  (dry run, no API calls made, judge column is meaningless)")
         else:
             protocols.append((col, None))
 

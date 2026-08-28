@@ -2,7 +2,7 @@
 
 This module logs every rejection, repair, and flag applied by the
 symbolic validator. The resulting log is the basis for the LLM
-extraction error taxonomy — a standalone research contribution.
+extraction error taxonomy, a standalone research contribution.
 """
 
 from __future__ import annotations

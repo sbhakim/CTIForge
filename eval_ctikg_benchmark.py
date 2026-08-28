@@ -79,7 +79,7 @@ def compute_triple_prf(
 ) -> dict[str, float]:
     """Compute P/R/F1 between predicted and gold triples using soft matching.
 
-    Matching is done on (subject, object) pairs — relation matching is relaxed
+    Matching is done on (subject, object) pairs, relation matching is relaxed
     because gold and predicted use different free-form relation strings.
     """
     matched_pred = set()
@@ -304,13 +304,12 @@ def main():
         "per_sentence": per_sentence_results,
     }
     write_json(results, out / "ctikg_benchmark_results.json")
-    # Persist the validator's error taxonomy alongside the metrics (see
-    # improvement_trace.md Section 17 -- benchmark runs previously wrote none).
+    # keep the taxonomy log next to the metrics
     pipeline.error_logger.save(out / "error_taxonomy")
 
     # Print comparison table
     print(f"\n{'='*70}")
-    print(f"  CTIKG Benchmark — Comparison Results")
+    print("  CTIKG Benchmark: comparison results")
     print(f"{'='*70}")
     print(f"  Sentences:      {len(rows)}")
     print(f"  Gold triples:   {len(all_gold_triples)}")

@@ -11,10 +11,8 @@ This aggregates one or more runs' `error_taxonomy/error_log.jsonl` into a
 per-category table with counts, share, and the action distribution
 (rejected / repaired / flagged) for each category.
 
-Note on provenance: `error_logger.save()` was historically reached only from
-main.py and src/cli.py, never from eval_head_to_head.py or
-eval_ctinexus_decomposed.py -- so no benchmark-scale run before August 2026
-produced a log. Both evaluators now persist it.
+`error_logger.save()` used to be reached only from main.py and src/cli.py, so
+the benchmark scripts never wrote a log. All three evaluators persist it now.
 
 Usage:
     conda run -n cti python eval_error_taxonomy.py output/<run>
@@ -88,7 +86,7 @@ def print_table(runs: list[tuple[str, dict]]) -> None:
         for _, s in runs:
             n = s["by_category"].get(cat, 0)
             pct = n / s["total"] * 100 if s["total"] else 0.0
-            row += f"{n:>9d} ({pct:4.1f}%)" if n else f"{'—':>16s}"
+            row += f"{n:>9d} ({pct:4.1f}%)" if n else f"{'-':>16s}"
         print(row)
     print("  " + "-" * (len(hdr) - 2))
     total_row = f"  {'TOTAL actions':{width}s}"
@@ -107,7 +105,7 @@ def print_table(runs: list[tuple[str, dict]]) -> None:
         for _, s in runs:
             n = s["by_action"].get(act, 0)
             pct = n / s["total"] * 100 if s["total"] else 0.0
-            row += f"{n:>9d} ({pct:4.1f}%)" if n else f"{'—':>16s}"
+            row += f"{n:>9d} ({pct:4.1f}%)" if n else f"{'-':>16s}"
         print(row)
 
 
@@ -134,10 +132,8 @@ def main():
     if not dirs:
         raise SystemExit(
             "No run directories given.\n"
-            "Note: error_taxonomy/ is only produced by runs that call\n"
-            "error_logger.save(). Before Aug 2026 that excluded\n"
-            "eval_head_to_head.py and eval_ctinexus_decomposed.py, so the\n"
-            "149-doc benchmark runs have no log. Re-run to generate one."
+            "error_taxonomy/ is only written by runs that call\n"
+            "error_logger.save(); older runs may not have one."
         )
 
     labels = args.labels or [d.name for d in dirs]

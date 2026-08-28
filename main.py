@@ -64,7 +64,7 @@ def cmd_extract(args: argparse.Namespace) -> None:
     rejected = sum(1 for t in triples if t.validation_status.value == "rejected")
 
     print(f"\n{'='*60}")
-    print(f"  CTIForge — Extraction Complete")
+    print(f"  CTIForge, Extraction Complete")
     print(f"{'='*60}")
     print(f"  Document:   {doc.doc_id}")
     print(f"  Chunks:     {len(doc.chunks)}")
@@ -135,7 +135,7 @@ def cmd_evaluate(args: argparse.Namespace) -> None:
 
     # Print results
     print(f"\n{'='*60}")
-    print(f"  Evaluation Results — Config: {pipeline.get_ablation_config_name()}")
+    print(f"  Evaluation Results, Config: {pipeline.get_ablation_config_name()}")
     print(f"{'='*60}")
     print(f"  Documents:  {len(docs)}")
     print(f"  Predicted:  {len(all_pred)} triples")
@@ -231,7 +231,7 @@ def cmd_ablation(args: argparse.Namespace) -> None:
 
     # Print comparison table
     print(f"\n{'='*70}")
-    print(f"  Ablation Comparison — Triple-Level F1")
+    print(f"  Ablation Comparison, Triple-Level F1")
     print(f"{'='*70}")
     print(f"  {'Config':<12} {'Precision':>10} {'Recall':>10} {'F1':>10}")
     print(f"  {'-'*42}")
@@ -252,7 +252,7 @@ def cmd_info(args: argparse.Namespace) -> None:
     pipe_cfg = PipelineConfig(args.config)
 
     print(f"\n{'='*60}")
-    print(f"  CTIForge — System Information")
+    print(f"  CTIForge, System Information")
     print(f"{'='*60}")
     print(f"  Provider:    {pipe_cfg.model_provider}")
     print(f"  Model:       {pipe_cfg.model}")

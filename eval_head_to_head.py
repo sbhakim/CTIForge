@@ -2,7 +2,7 @@
 """Head-to-head evaluation: CTIForge vs CTI-Nexus vs AttacKG+ on the SAME data.
 
 All systems process the same CTI documents, and outputs are scored
-with the SAME evaluation function — no advantage to any system.
+with the SAME evaluation function, no advantage to any system.
 
 Usage:
     python eval_head_to_head.py --max-docs 20
@@ -795,7 +795,7 @@ def main():
         return
 
     print("\n" + "=" * 80)
-    print(f"  HEAD-TO-HEAD COMPARISON — {len(docs)} documents")
+    print(f"  HEAD-TO-HEAD COMPARISON, {len(docs)} documents")
     print(f"  Same gold data, same evaluation function")
     print("=" * 80)
 

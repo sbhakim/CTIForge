@@ -22,7 +22,7 @@ from src.utils.logging import setup_logger
 
 logger = setup_logger(__name__)
 
-# Relation importance weights — specific CTI relations score higher
+# Relation importance weights, specific CTI relations score higher
 _RELATION_WEIGHT: dict[RelationType, float] = {
     RelationType.EXPLOITS: 1.0,
     RelationType.DELIVERS: 0.95,
@@ -55,12 +55,12 @@ class SaliencyFilter:
         # Signal 1: Relation specificity (0.0 - 1.0)
         rel_score = _RELATION_WEIGHT.get(triple.relation, 0.3)
 
-        # Signal 2: Entity centrality — average frequency of subject/object
+        # Signal 2: Entity centrality, average frequency of subject/object
         subj_freq = entity_freq.get(triple.subject.lower(), 1)
         obj_freq = entity_freq.get(triple.object.lower(), 1)
         centrality = ((subj_freq + obj_freq) / 2) / max(max_freq, 1)
 
-        # Signal 3: Evidence strength — longer evidence = more grounded
+        # Signal 3: Evidence strength, longer evidence = more grounded
         evidence_len = len(triple.evidence_text)
         # Normalize: 50+ chars is good, cap at 200
         evidence_score = min(evidence_len / 200, 1.0) if evidence_len > 0 else 0.3

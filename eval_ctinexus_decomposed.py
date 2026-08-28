@@ -100,7 +100,7 @@ def compute_phase1_triplet_f1(
     predicted: list[Triple],
     gold: list[Triple],
 ) -> dict:
-    """Phase 1: Triplet extraction — (subject, relation, object) with semantic matching.
+    """Phase 1: Triplet extraction, (subject, relation, object) with semantic matching.
 
     Comparable to CTI-Nexus's 87.65% triplet extraction F1.
     Relations are compared after normalization to our 12 types.
@@ -152,7 +152,7 @@ def compute_phase1_triplet_f1(
         ("related_to", "attributed_to"),
         # Inverse perspectives: "actor drops malware" vs "malware attributed_to actor"
         ("attributed_to", "drops"),
-        # related_to is a catch-all — extend to mitigated_by for consistency
+        # related_to is a catch-all, extend to mitigated_by for consistency
         ("related_to", "mitigated_by"),
         # CVE "is a" type of issue: variant_of vs exploits for vulnerability classification
         ("exploits", "variant_of"),
@@ -277,7 +277,7 @@ def compute_phase1_subject_object_f1(
     predicted: list[Triple],
     gold: list[Triple],
 ) -> dict:
-    """Phase 1 relaxed: (subject, object) pair matching — relation-agnostic.
+    """Phase 1 relaxed: (subject, object) pair matching, relation-agnostic.
 
     Shows how well we identify the right entity pairs regardless of relation type.
     """
@@ -293,7 +293,7 @@ def compute_phase1_subject_object_f1(
     matched_pred = set()
 
     # Iterate in sorted order: set iteration order depends on per-process string
-    # hash randomization, which made greedy match order -- and therefore TP --
+    # hash randomization, which made greedy match order, and therefore TP --
     # vary between identical runs (measured: 878-880 TP, +/-0.0012 F1).
     for p in sorted(pred_pairs):
         for g in sorted(gold_pairs - matched_gold):
@@ -418,7 +418,7 @@ def main():
 
     # Print results
     print(f"\n{'='*70}")
-    print(f"  CTI-Nexus Decomposed Evaluation — {len(docs)} documents")
+    print(f"  CTI-Nexus decomposed evaluation: {len(docs)} documents")
     print(f"{'='*70}")
     print(f"  Predicted: {len(all_pred)} triples")
     print(f"  Gold:      {len(all_gold)} triples")

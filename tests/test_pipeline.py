@@ -103,7 +103,7 @@ class TestEndToEnd:
             ),
             Triple(
                 event_id="t3",
-                subject="",  # empty — should be rejected
+                subject="",  # empty, should be rejected
                 subject_type=EntityType.MALWARE,
                 relation=RelationType.DROPS,
                 object="payload.exe",

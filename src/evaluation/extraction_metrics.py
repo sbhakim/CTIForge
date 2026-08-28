@@ -36,7 +36,7 @@ _COMPATIBLE_RELATIONS = {
     ("targets", "exploits"),   # "targets vulnerability" vs "exploits vulnerability"
     ("communicates_with", "uses"),         # "uses C2 server" vs "communicates with"
     ("exploits", "mitigated_by"),          # "exploits CVE" vs "mitigated_by CVE" direction confusion
-    # related_to is the defined catch-all — a specific relation is a valid refinement
+    # related_to is the defined catch-all, a specific relation is a valid refinement
     ("related_to", "uses"),
     ("related_to", "targets"),
     ("related_to", "associated_with"),
@@ -181,7 +181,7 @@ def _extract_triple_keys(
 def _extract_relation_keys(
     triples: list[Triple], mode: str
 ) -> Counter:
-    """Extract relation keys (subject, relation, object) — ignoring entity types."""
+    """Extract relation keys (subject, relation, object), ignoring entity types."""
     keys: Counter = Counter()
     for t in triples:
         key = (

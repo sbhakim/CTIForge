@@ -1,9 +1,8 @@
 """Tests for src/evaluation/llm_judge.py.
 
-The judge is the only human-aligned protocol available (Section 15: 0.860 vs
-~0.70 for every lexical matcher), so its verdict parsing and its cache have to be
-right. A silent parse failure reads as "zero true positives" and would look like
-a real result rather than a bug.
+The judge is the only protocol with measured agreement against human judgement,
+so its verdict parsing and its cache have to be right. A silent parse failure
+reads as "zero true positives", which looks like a result rather than a bug.
 """
 
 import json

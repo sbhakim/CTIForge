@@ -2,9 +2,8 @@
 
 The manuscript lists a 14-category taxonomy as a contribution, described as "an
 empirically grounded characterization of where and how LLM extraction fails".
-Auditing 67 run logs (829 logged actions) on 2026-08-28 found that only 8
-categories ever fire, and that 3 of the 14 have no call site anywhere in src/ --
-they cannot fire at all.
+Across the archived run logs only 8 categories ever fire, and 3 of the 14 have
+no call site anywhere in src/, so they cannot fire at all.
 
 These tests pin the current state so that:
   - wiring up a dead category (good) fails loudly and prompts a doc update;
@@ -22,7 +21,7 @@ from src.symbolic.error_logger import ErrorCategory
 
 SRC = Path(__file__).resolve().parent.parent / "src"
 
-# Declared but with zero call sites outside error_logger.py, as of 2026-08-28.
+# Declared but with zero call sites outside error_logger.py.
 KNOWN_DEAD = {
     "duplicate_entity",
     "hallucinated_relation",
@@ -30,7 +29,7 @@ KNOWN_DEAD = {
 }
 
 # Wired to a call site but never observed across 67 archived run logs.
-# Not a defect on its own -- they guard genuinely rare conditions.
+# Not a defect on its own, they guard genuinely rare conditions.
 KNOWN_WIRED_BUT_UNOBSERVED = {
     "empty_field",          # parser filters empty fields upstream of validation
     "malformed_identifier",

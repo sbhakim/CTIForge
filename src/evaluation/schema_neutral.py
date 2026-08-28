@@ -3,7 +3,7 @@
 Why this module exists
 ----------------------
 `compute_quality_metrics()` and `structural_metrics.py::type_constraint_compliance`
-score every system against CTIForge's own constraint table -- the same table
+score every system against CTIForge's own constraint table, the same table
 the CTIForge validator enforces at extraction time. CTIForge therefore cannot
 score low on them: it rejects or repairs any triple that would violate them.
 Those metrics are *definitional* (evidence that the symbolic layer enforces its
@@ -31,10 +31,8 @@ from __future__ import annotations
 
 from collections import Counter
 
-# ---------------------------------------------------------------------------
 # CTIForge entity type -> STIX 2.1 SDO/SCO type.
 # Applied identically to every system's output.
-# ---------------------------------------------------------------------------
 CTIFORGE_TO_STIX: dict[str, str] = {
     "ThreatActor": "threat-actor",
     "Campaign": "campaign",
@@ -52,15 +50,13 @@ CTIFORGE_TO_STIX: dict[str, str] = {
     "Other": None,  # unmappable; excluded from the denominator
 }
 
-# ---------------------------------------------------------------------------
 # STIX 2.1 relationship summary table (subset covering our 12 relations).
 # Source: OASIS STIX 2.1 spec, SRO relationship definitions.
 # Each entry: relation -> (valid source SDO types, valid target SDO types)
 #
 # NOTE: this is deliberately a *subset*. Relations whose STIX domain/range we
 # cannot state confidently are omitted and excluded from scoring rather than
-# guessed at -- see UNSCORED below.
-# ---------------------------------------------------------------------------
+# guessed at, see UNSCORED below.
 STIX_RELATIONSHIP_CONSTRAINTS: dict[str, tuple[frozenset[str], frozenset[str]]] = {
     # <attack-pattern|campaign|intrusion-set|malware|threat-actor|tool> uses
     #   <attack-pattern|infrastructure|malware|tool>

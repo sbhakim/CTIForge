@@ -56,7 +56,7 @@ class TestNotCircular:
                     sg_ok = TypeConstraints.is_valid_type_pair(st, rel, ot)
                     if stix_ok != sg_ok:
                         disagreements += 1
-        assert disagreements > 0, "STIX table mirrors CTIForge's -- metric is circular"
+        assert disagreements > 0, "STIX table mirrors CTIForge's, metric is circular"
 
 
 class TestStixCompliance:

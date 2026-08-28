@@ -15,16 +15,16 @@ recoverable from the output.
 
 Five stages, each independently toggleable for ablation:
 
-- **A — Ingestion.** Loads reports, splits them into paragraph-level chunks with
+- **A. Ingestion.** Loads reports, splits them into paragraph-level chunks with
   stable IDs and character offsets back into the source.
-- **B — Extraction.** LLM prompting for typed triples with evidence spans.
+- **B. Extraction.** LLM prompting for typed triples with evidence spans.
   Optional few-shot retrieval and link prediction over disconnected subgraphs.
-- **C — Validation.** Type-pair constraints with auto-swap repair for reversed
+- **C. Validation.** Type-pair constraints with auto-swap repair for reversed
   arguments, IOC format normalisation, evidence alignment, placeholder
   detection. Every action lands in an error taxonomy log.
-- **D — Grounding.** Alias-based canonicalisation and MITRE ATT&CK technique
+- **D. Grounding.** Alias-based canonicalisation and MITRE ATT&CK technique
   grounding.
-- **E — Fusion.** Cross-document merge that keeps per-triple provenance.
+- **E. Fusion.** Cross-document merge that keeps per-triple provenance.
 
 ## Setup
 
@@ -94,8 +94,8 @@ true positives by about 6%. Results carry both scopes; the one you want is tagge
 `src/evaluation/schema_neutral.py` separates measures that depend on no
 participant's ontology (STIX 2.1 relationship compliance, evidence presence,
 duplicate rate) from measures scored against CTIForge's own constraint table. The
-latter are definitional — the validator enforces that table at extraction time, so
-CTIForge cannot score badly on them — and comparing another system against them
+latter are definitional, the validator enforces that table at extraction time, so
+CTIForge cannot score badly on them, and comparing another system against them
 is not meaningful.
 
 ## Tests

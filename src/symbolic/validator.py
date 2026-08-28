@@ -33,7 +33,7 @@ GENERIC_PLACEHOLDERS = frozenset({
     "server", "the server", "malware", "the malware",
     "tool", "the tool", "file", "the file",
     "unknown", "n/a", "none",
-    # Pronouns — LLMs sometimes extract pronouns as entity names
+    # Pronouns, LLMs sometimes extract pronouns as entity names
     "they", "them", "their", "it", "its", "he", "she", "him", "her",
     "this", "these", "those", "we", "our", "the group", "the actor",
     "the campaign", "the malware family", "the vulnerability",
@@ -155,7 +155,7 @@ class SymbolicValidator:
 
         # 5. Type-pair constraint checking (with auto-swap repair)
         if not TypeConstraints.is_valid_type_pair(t.subject_type, t.relation, t.object_type):
-            # Try swapping subject and object — LLMs often reverse the direction
+            # Try swapping subject and object, LLMs often reverse the direction
             if TypeConstraints.is_valid_type_pair(t.object_type, t.relation, t.subject_type):
                 old_subj, old_obj = t.subject, t.object
                 old_stype, old_otype = t.subject_type, t.object_type
@@ -218,7 +218,7 @@ class SymbolicValidator:
         # 10. Validate ATT&CK IDs if present
         t = self._validate_attack_ids(t)
 
-        # 11. Low-confidence rejection — triples penalized below threshold are dropped
+        # 11. Low-confidence rejection, triples penalized below threshold are dropped
         if self.min_confidence_threshold > 0 and t.confidence <= self.min_confidence_threshold:
             return self._reject(
                 t, ErrorCategory.CONFIDENCE_LOWERED,
@@ -316,7 +316,7 @@ class SymbolicValidator:
         if not evidence:
             return triple
 
-        # Skip evidence check for very short entity names (≤3 chars) — they match as substrings too often
+        # Skip evidence check for very short entity names (≤3 chars), they match as substrings too often
         subj_skip = len(triple.subject.strip()) <= 3
         obj_skip = len(triple.object.strip()) <= 3
 
@@ -327,7 +327,7 @@ class SymbolicValidator:
             return triple
 
         if not subject_present and not object_present:
-            # Heavy penalty but don't reject — LLMs often paraphrase entity names
+            # Heavy penalty but don't reject, LLMs often paraphrase entity names
             # in evidence spans, so absence doesn't necessarily mean hallucination.
             triple.confidence = max(triple.confidence - 0.3, 0.1)
             self.error_logger.log(

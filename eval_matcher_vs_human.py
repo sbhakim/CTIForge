@@ -73,10 +73,8 @@ def _norm_rel(raw: str) -> str:
         return "related_to"
 
 
-# --------------------------------------------------------------------------
 # Protocols. Each answers: does edge `e` match any edge in `graph`?
 # `e` and graph entries are (subject, relation, object) raw strings.
-# --------------------------------------------------------------------------
 
 def p_exact(e, graph) -> bool:
     key = (_normalize(e[0]), _normalize(e[1]), _normalize(e[2]))
@@ -105,7 +103,7 @@ def p_name_soft_compat(e, graph) -> bool:
 
 
 def p_so_pair(e, graph) -> bool:
-    """Relation ignored entirely -- needs no relation normalisation, so it is the
+    """Relation ignored entirely, needs no relation normalisation, so it is the
     only lexical protocol free of that lossy step."""
     return any(
         (_names_match(e[0], g[0]) and _names_match(e[2], g[2]))
@@ -147,7 +145,7 @@ def _coerce_graph(raw) -> list[tuple[str, str, str]]:
 
     `Ground Truth Graph` is a parsed list of {sub, rel, obj} dicts.
     `Predict Graph` is a Python-repr STRING of {'entities': [...], 'relations': [...]}
-    (single-quoted, so json.loads fails -- ast.literal_eval is required).
+    (single-quoted, so json.loads fails, ast.literal_eval is required).
     """
     if not raw:
         return []

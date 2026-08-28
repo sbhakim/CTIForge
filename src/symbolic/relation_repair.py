@@ -147,7 +147,7 @@ class RelationRepairer:
                 and self._contains_any(evidence, ("discover", "found", "report", "analyz", "identif", "observ", "track"))):
             return RelationType.ASSOCIATED_WITH
 
-        # exploits used too broadly — if object is NOT a Vulnerability/Software/Infrastructure,
+        # exploits used too broadly, if object is NOT a Vulnerability/Software/Infrastructure,
         # downgrade to uses or targets based on evidence
         if (relation == RelationType.EXPLOITS
                 and obj_type not in (EntityType.VULNERABILITY, EntityType.SOFTWARE, EntityType.INFRASTRUCTURE)):

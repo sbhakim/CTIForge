@@ -1,17 +1,17 @@
 """LLM-judge protocol, using GRID's calibrated judge prompt.
 
-Section 15 established that no lexical or embedding matcher agrees with human
-judgement more than ~70% of the time, while GRID's LLM judge reaches 86.0%. That
-makes the judge the only human-aligned reference protocol available, and the
-natural extra column for the multi-system spread table.
+No lexical or embedding matcher we tested agrees with human judgement more than
+about 70% of the time; GRID's LLM judge reaches 86%. That makes the judge the
+only human-aligned reference protocol available, so it gets its own column in the
+multi-system spread table.
 
-IMPORTANT -- what "86.0%" is attached to. That figure was measured for a specific
+IMPORTANT, what "86.0%" is attached to. That figure was measured for a specific
 pair: GRID's `grid_judge_fav` prompt AND the GPT-5.4-mini model, at temperature
 0.1 with medium reasoning effort. This module reuses the prompt verbatim (writing
 our own would just add an eighth arbitrary protocol rather than a calibrated
 reference), but the model is configurable. Running a different model is a
 deviation whose effect on human agreement is UNMEASURED and must be reported as
-such -- do not carry the 86.0% figure over to a judge you have not calibrated.
+such, do not carry the 86.0% figure over to a judge you have not calibrated.
 
 Cost discipline follows GRID's own lesson: their task-bank supervision cost ~$60
 offline and was reusable, while the equivalent online LLM-as-judge cost ~$942.
@@ -194,7 +194,7 @@ class CachedJudge:
                 max_tokens=self.max_tokens,
             )
             out = resp.choices[0].message.content or ""
-        except Exception as exc:  # network/quota/parse -- do not poison the cache
+        except Exception as exc:  # network/quota/parse, do not poison the cache
             self.stats["errors"] += 1
             print(f"    [judge error] {type(exc).__name__}: {str(exc)[:160]}")
             return ""
