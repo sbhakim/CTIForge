@@ -1,6 +1,4 @@
-# ---------------------------------------------------------------------------
-# Secrets and local environment  (HIGHEST PRIORITY -- never relax these)
-# ---------------------------------------------------------------------------
+# keys and local env
 .env
 .env.*
 !.env.example
@@ -26,32 +24,30 @@ service-account*.json
 .gcp/
 gcloud-*.json
 
-# ---------------------------------------------------------------------------
-# Data (third-party corpora — see README for how to obtain)
-# ---------------------------------------------------------------------------
+# corpora are third party, see README
 data/
 
-# ---------------------------------------------------------------------------
-# Run outputs, caches, and results
-# ---------------------------------------------------------------------------
+# run outputs
 output/
 ctinexus_output/
+results/
+eval_output/
+experiments/
+runs/
+logs/
+tmp/
+scratch/
+debug_raw_generations/
 *.jsonl
 *_cached_triples.json
 judge_cache/
 
-# ---------------------------------------------------------------------------
-# Internal working notes and planning documents
-# ---------------------------------------------------------------------------
-improvement_trace.md
-comparison_framework.md
-future-upgrade-plan.md
-how-to-run-compile.md
+# working notes, only the README goes in
+*.md
+!README.md
 .backup_prepatch/
 
-# ---------------------------------------------------------------------------
-# One-off diagnostic and probe scripts (kept locally, not part of the pipeline)
-# ---------------------------------------------------------------------------
+# scratch scripts from the ablation work, not part of the pipeline
 lever*.py
 probe_*.py
 rescorer_*.py
@@ -59,14 +55,30 @@ diagnose_*.py
 compare_same_backbone_149.py
 structural_metrics_149*.py
 
-# ---------------------------------------------------------------------------
-# Vendored JS assets emitted by graph visualisation
-# ---------------------------------------------------------------------------
-lib/
+# paper lives in its own tree
+*.tex
+*.bib
+*.cls
+*.sty
+*.bst
+Manuscript/
+manuscript/
+paper/
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.out
+*.synctex.gz
+*.toc
+*.nav
+*.snm
+*.vrb
 
-# ---------------------------------------------------------------------------
-# Python
-# ---------------------------------------------------------------------------
+# python
 __pycache__/
 *.py[cod]
 *.egg-info/
@@ -81,27 +93,11 @@ venv/
 .coverage
 htmlcov/
 
-# ---------------------------------------------------------------------------
-# Editor / tooling
-# ---------------------------------------------------------------------------
-.claude/
-.claude
-.codex/
-.codex
-.idea/
-.vscode/
-*.swp
-.DS_Store
-
-# ---------------------------------------------------------------------------
-# Notebooks
-# ---------------------------------------------------------------------------
+# notebooks
 *.ipynb
 .ipynb_checkpoints/
 
-# ---------------------------------------------------------------------------
-# Model weights, adapters, and serialized artifacts
-# ---------------------------------------------------------------------------
+# weights and anything serialised
 *.pt
 *.pth
 *.bin
@@ -129,9 +125,7 @@ adapters/
 .cache/
 huggingface/
 
-# ---------------------------------------------------------------------------
-# Archives
-# ---------------------------------------------------------------------------
+# archives
 *.zip
 *.tar
 *.tar.gz
@@ -142,86 +136,17 @@ huggingface/
 *.7z
 *.rar
 
-# ---------------------------------------------------------------------------
-# Experiment tracking and profiling
-# ---------------------------------------------------------------------------
+# tracking / profiling
 wandb/
 mlruns/
-runs/
-lightning_logs/
 tensorboard/
+lightning_logs/
 events.out.tfevents.*
 *.prof
 *.lprof
 prof/
 
-# ---------------------------------------------------------------------------
-# Additional run-output directory names
-# ---------------------------------------------------------------------------
-results/
-eval_output/
-experiments/
-logs/
-tmp/
-scratch/
-debug_raw_generations/
-
-# ---------------------------------------------------------------------------
-# Manuscript: sources and build artifacts never belong in the code repository
-# ---------------------------------------------------------------------------
-*.tex
-*.bib
-*.cls
-*.sty
-*.bst
-Manuscript/
-manuscript/
-paper/
-# ---------------------------------------------------------------------------
-# LaTeX build artifacts
-# ---------------------------------------------------------------------------
-*.aux
-*.bbl
-*.blg
-*.fdb_latexmk
-*.fls
-*.lof
-*.lot
-*.out
-*.synctex.gz
-*.toc
-*.nav
-*.snm
-*.vrb
-
-# ---------------------------------------------------------------------------
-# Graph visualisation output
-# ---------------------------------------------------------------------------
-*.html
-!docs/**/*.html
-
-# ---------------------------------------------------------------------------
-# Editor, OS, and merge leftovers
-# ---------------------------------------------------------------------------
-*~
-*.tmp
-*.orig
-*.rej
-*.bak
-.*.swo
-Thumbs.db
-desktop.ini
-ehthumbs.db
-$RECYCLE.BIN/
-
-# ---------------------------------------------------------------------------
-# Escape hatches -- small fixtures the test suite may legitimately need
-# ---------------------------------------------------------------------------
-!tests/fixtures/**
-
-# ---------------------------------------------------------------------------
-# Images and rendered documents
-# ---------------------------------------------------------------------------
+# figures
 *.png
 *.jpg
 *.jpeg
@@ -230,15 +155,12 @@ $RECYCLE.BIN/
 *.pdf
 *.eps
 
-# ---------------------------------------------------------------------------
-# Markdown: only README.md ships. Everything else is working notes.
-# ---------------------------------------------------------------------------
-*.md
-!README.md
+# pyvis dumps these next to the graphs
+lib/
+*.html
+!docs/**/*.html
 
-# ---------------------------------------------------------------------------
-# Assistant / editor tool configuration and session state
-# ---------------------------------------------------------------------------
+# editors
 .claude/
 .claude
 CLAUDE.md
@@ -257,3 +179,22 @@ GEMINI.md
 .github/copilot-instructions.md
 .specstory/
 .sourcegraph/
+.idea/
+.vscode/
+
+# os / leftovers
+*~
+*.tmp
+*.orig
+*.rej
+*.bak
+*.swp
+.*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
+
+# small fixtures the tests need
+!tests/fixtures/**
