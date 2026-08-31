@@ -57,9 +57,15 @@ structural_metrics_149*.py
 
 # exploratory or superseded provider configs; reported-run configs stay tracked
 /configs/deepseek-v4pro.yaml
+/configs/local-gemma.yaml
+/configs/local-llama.yaml
+/configs/local-mistral.yaml
 /configs/local-mistral-matched.yaml
+/configs/local-qwen.yaml
 /configs/local-qwen25.yaml
 /configs/moonshot-kimik3.yaml
+/configs/openrouter.yaml
+/configs/openrouter_gpt4o.yaml
 /configs/zai-glm46.yaml
 /configs/zai-glm53.yaml
 
