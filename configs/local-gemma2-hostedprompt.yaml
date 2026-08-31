@@ -1,0 +1,91 @@
+# Gemma-2-9B-IT local backbone on the HOSTED extraction prompt.
+#
+# Never run before: configs/local-gemma.yaml failed on Gemma's chat template,
+# which rejects the system role. Fixed in _complete_local, which now folds the
+# system text into the user turn when a template refuses it.
+#
+# Companion to configs/local-mistral-matched.yaml, which uses the local prompt.
+# That prompt asks for 4-10 triples per chunk while the hosted one asks for 8-15,
+# so the 7B recall figure was not separable from the instruction it was given.
+# This config removes both caps: no local prompt_template, so extraction.jinja is
+# used, and max_triples raised from 10 to 15 to match rule 14 of that prompt.
+# Everything else is identical to the matched config. Every pipeline block is stated explicitly: configs that omit
+# them inherit defaults that predate the March 22 precision-first design
+# (supplement extraction, guided re-extraction and confidence rescoring all
+# default ON, saliency filtering defaults OFF), which is the opposite of the
+# shipped pipeline. The only intended difference from configs/openrouter-minimax.yaml
+# is the extraction backbone, plus the stricter local JSON prompt a 7B needs to
+# parse reliably.
+
+llm:
+  provider: local_gemma
+  models:
+    openai: gpt-4o
+    local_gemma: huggingface/google/gemma-2-9b-it
+  temperature: 0.1
+  max_tokens: 4096
+  retry_attempts: 3
+  local:
+    system_prompt: "You extract cyber threat intelligence triples from incident reports."
+    do_sample: false
+    max_new_tokens: 1280
+    max_triples: 15
+
+embedding:
+  provider: local
+  models:
+    local: sentence-transformers/all-MiniLM-L6-v2
+  batch_size: 32
+
+extraction:
+  few_shot_examples: 3
+  max_chunk_chars: 2000
+  overlap_chars: 200
+  max_triples_per_chunk: 15
+
+validation:
+  reject_missing_evidence: true
+  reject_unsupported_by_evidence: true
+  max_triples_per_chunk: 15
+  min_entity_name_length: 2
+  min_confidence_threshold: 0.2
+
+canonicalization:
+  similarity_threshold: 0.85
+  use_alias_tables: true
+  merge_ioc_by_exact_match: true
+
+link_prediction:
+  enabled: true
+  max_predictions: 5
+
+entity_alignment:
+  enabled: true
+
+supplement_extraction:
+  enabled: false
+
+guided_reextraction:
+  enabled: false
+
+confidence_rescoring:
+  enabled: false
+  prune_threshold: 0.45
+
+saliency_filter:
+  enabled: true
+  max_triples_per_doc: 20
+
+relation_repair:
+  promote_associated_with: true
+  require_entity_mentions: false
+
+fusion:
+  min_confidence_for_merge: 0.5
+  preserve_provenance: true
+
+paths:
+  annotations: data/annotations/ctinexus
+  external: data/external
+  processed: data/processed
+  error_taxonomy: data/error_taxonomy
