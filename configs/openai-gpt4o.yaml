@@ -1,0 +1,77 @@
+# GPT-4o backbone via the direct OpenAI API, for the module ablation.
+#
+# Same precision-first settings as configs/openrouter-minimax.yaml so the only
+# thing that varies is the extractor. Note the endpoint differs from
+# configs/openrouter_gpt4o.yaml, which produced tab:full-results and the
+# head-to-head via OpenRouter; the snapshot served here is gpt-4o-2024-08-06.
+
+llm:
+  provider: openai
+  models:
+    openai: gpt-4o
+    local_mistral: huggingface/mistralai/Mistral-7B-Instruct-v0.3
+  temperature: 0.1
+  max_tokens: 4096
+  retry_attempts: 3
+  structured_output:
+    enabled: true
+    type: json_object
+
+embedding:
+  provider: local
+  models:
+    local: sentence-transformers/all-MiniLM-L6-v2
+  batch_size: 32
+
+extraction:
+  few_shot_examples: 3
+  max_chunk_chars: 2000
+  overlap_chars: 200
+  max_triples_per_chunk: 15
+
+validation:
+  reject_missing_evidence: true
+  reject_unsupported_by_evidence: true
+  max_triples_per_chunk: 15
+  min_entity_name_length: 2
+  min_confidence_threshold: 0.2
+
+canonicalization:
+  similarity_threshold: 0.85
+  use_alias_tables: true
+  merge_ioc_by_exact_match: true
+
+link_prediction:
+  enabled: true
+  max_predictions: 5
+
+entity_alignment:
+  enabled: true
+
+supplement_extraction:
+  enabled: false
+
+guided_reextraction:
+  enabled: false
+
+confidence_rescoring:
+  enabled: false
+  prune_threshold: 0.45
+
+saliency_filter:
+  enabled: true
+  max_triples_per_doc: 20
+
+relation_repair:
+  promote_associated_with: true
+  require_entity_mentions: false
+
+fusion:
+  min_confidence_for_merge: 0.5
+  preserve_provenance: true
+
+paths:
+  annotations: data/annotations/ctinexus
+  external: data/external
+  processed: data/processed
+  error_taxonomy: data/error_taxonomy
