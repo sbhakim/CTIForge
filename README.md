@@ -35,6 +35,15 @@ pip install -r requirements.txt
 cp .env.example .env      # then add a key for whichever provider you use
 ```
 
+Everything here was run on Python 3.11 under Linux (kernel 6.8). The local
+backbones need `torch` 2.10 with CUDA 12.8 and `transformers` 5.3 on a 24 GB
+card; a 7B model at bf16 sits at roughly 16 GB, Gemma-2-9B at 20 GB. The hosted
+backbones need no GPU. Embedding protocols pull `all-MiniLM-L12-v2` and the
+entailment protocol pulls `facebook/bart-large-mnli` on first use, about 1.6 GB.
+
+If you only want to reproduce scoring and not extraction, none of that is
+needed — the scoring harnesses run on cached predictions on a laptop.
+
 Extraction goes through LiteLLM, so OpenAI, Anthropic, Google, DeepSeek,
 OpenRouter, and local HuggingFace models all work. `configs/` has a starting
 point for each.
@@ -49,6 +58,26 @@ The evaluation corpora are third-party and not redistributed here.
 
 Put them where the configs expect them: `data/annotations/ctinexus/` and
 `data/external/mitre.jsonl`.
+
+The ten-system prediction cache used by `eval_multisystem_spread.py`, and the
+adjudicated items used by `eval_matcher_vs_human.py`, both come from the GRID
+release. They are not redistributed here; the scripts expect them at the paths
+named at the top of each file. Every system in that cache was run on the same
+extraction model, which is why it is usable for comparing matchers and not for
+comparing pipelines.
+
+No split is learned anywhere in this repository — nothing is trained. Scoring is
+over the full annotated set, matched within each document.
+
+## Start here
+
+```bash
+pytest tests/ -q                                    # ~3 s, no data needed
+python main.py --config configs/default.yaml info   # shows resolved config and available providers
+```
+
+If the tests pass, the pipeline and scoring code are intact. Extraction needs a
+provider key; scoring does not.
 
 ## Running
 
@@ -71,16 +100,25 @@ will silently score the previous run.
 
 ## Evaluation
 
-| Script | What it does |
-|---|---|
-| `eval_ctinexus_decomposed.py` | Triplet and subject–object metrics on CTI-Nexus |
-| `eval_ctikg_benchmark.py` | Comparison against CTIKG on its 255-sentence set |
-| `eval_head_to_head.py` | Matched-backbone comparison with CTI-Nexus and AttacKG+ |
-| `eval_protocol_spread.py` | One prediction set scored under seven matchers |
-| `eval_multisystem_spread.py` | Protocol sensitivity across systems; finds rank reversals |
-| `eval_matcher_vs_human.py` | Matcher agreement against human-adjudicated judgements |
-| `eval_error_taxonomy.py` | Aggregates validator logs into per-category tables |
-| `structural_metrics.py` | Evidence presence, schema compliance, duplicate rate |
+| Script | What it produces | Needs |
+|---|---|---|
+| `eval_ctinexus_decomposed.py` | Triplet and subject–object metrics on CTI-Nexus, per document and pooled | extraction |
+| `eval_module_ablation.py` | B / B+C / B+C+D from one shared extraction pass, plus per-arm predictions | extraction |
+| `eval_protocol_spread.py` | One prediction set scored under seven matchers — the 0.16–0.70 span | cached preds |
+| `eval_multisystem_spread.py` | Ten systems × eight protocols; counts rank reversals | GRID cache |
+| `eval_matcher_vs_human.py` | Agreement of each matcher with human adjudication | GRID labels |
+| `eval_error_taxonomy.py` | Validator actions by category and by action taken | a run's logs |
+| `eval_ctikg_benchmark.py` | Comparison against CTIKG on its 255-sentence set | extraction |
+| `eval_head_to_head.py` | Matched-backbone comparison with CTI-Nexus and AttacKG+ | extraction |
+| `structural_metrics.py` | Evidence presence, schema compliance, duplicate rate | cached preds |
+
+The four in the middle need no model calls. They re-score predictions that are
+already on disk, so they finish in minutes and cost nothing — start there if you
+want to check the protocol-sensitivity results without running extraction.
+
+`eval_module_ablation.py` runs extraction once and derives all three arms from it.
+That matters: run the arms separately and they differ by a fresh sampling of the
+model as well as by the module you meant to test.
 
 Two things about the harness are easy to get wrong.
 

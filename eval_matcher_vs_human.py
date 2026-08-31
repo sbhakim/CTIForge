@@ -140,6 +140,29 @@ class EmbedProtocol:
         return bool((gv @ ev).max() >= self.threshold)
 
 
+class NLIProtocol:
+    """Entailment as a matching protocol: does any gold edge entail the prediction?
+
+    Every gold edge is scored with no lexical pre-filter, so this stays
+    independent of the string protocols it is compared against.
+    """
+
+    def __init__(self, threshold: float = 0.5, scorer=None,
+                 cache_path="output/nli_cache_matcher.json"):
+        from src.evaluation.nli_faithfulness import NLIScorer, graph_entails_edge
+        self.threshold = threshold
+        # Thresholds differ but the underlying probabilities do not, so every
+        # threshold shares one scorer and one cache.
+        self._scorer = scorer if scorer is not None else NLIScorer(cache_path=cache_path)
+        self._fn = graph_entails_edge
+
+    def __call__(self, e, graph) -> bool:
+        return self._fn(self._scorer, e, graph, threshold=self.threshold)
+
+    def save(self):
+        self._scorer.save_cache()
+
+
 def _coerce_graph(raw) -> list[tuple[str, str, str]]:
     """Normalise the two storage shapes used in the calibration files.
 
@@ -234,6 +257,7 @@ def score(items, protocol) -> dict:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--no-embed", action="store_true", help="skip sentence-transformer protocols")
+    ap.add_argument("--no-nli", action="store_true", help="skip NLI entailment protocols")
     ap.add_argument("-o", "--output", default="output/matcher_vs_human.json")
     args = ap.parse_args()
 
@@ -253,6 +277,14 @@ def main():
     if not args.no_embed:
         for thr in (0.60, 0.75, 0.85):
             protocols.append((f"embed cos>={thr:.2f}", EmbedProtocol(thr)))
+    nli_protocols = []
+    if not args.no_nli:
+        from src.evaluation.nli_faithfulness import NLIScorer
+        shared = NLIScorer(cache_path="output/nli_cache_matcher.json")
+        for thr in (0.50, 0.75, 0.90):
+            proto = NLIProtocol(thr, scorer=shared)
+            nli_protocols.append(proto)
+            protocols.append((f"NLI entail>={thr:.2f}", proto))
 
     hdr = f"  {'protocol':34s} {'ALL':>8s} {'prec':>8s} {'rec':>8s} {'over':>7s} {'under':>7s}"
     print(hdr)
@@ -275,6 +307,9 @@ def main():
 
     print("\n  over  = matcher credits a match the human rejected (too lenient)")
     print("  under = human credits a match the matcher missed (too strict)\n")
+
+    if nli_protocols:
+        nli_protocols[0].save()   # shared scorer, one write
 
     out = Path(args.output)
     out.parent.mkdir(parents=True, exist_ok=True)
