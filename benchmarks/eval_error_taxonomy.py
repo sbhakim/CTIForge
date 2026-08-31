@@ -15,9 +15,9 @@ per-category table with counts, share, and the action distribution
 the benchmark scripts never wrote a log. All three evaluators persist it now.
 
 Usage:
-    conda run -n cti python eval_error_taxonomy.py output/<run>
-    conda run -n cti python eval_error_taxonomy.py output/runA output/runB --labels B+C B+C+D
-    conda run -n cti python eval_error_taxonomy.py --discover      # any run with a log
+    conda run -n cti python -m benchmarks.eval_error_taxonomy output/<run>
+    conda run -n cti python -m benchmarks.eval_error_taxonomy output/runA output/runB --labels B+C B+C+D
+    conda run -n cti python -m benchmarks.eval_error_taxonomy --discover      # any run with a log
 """
 
 from __future__ import annotations

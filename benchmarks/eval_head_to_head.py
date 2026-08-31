@@ -5,9 +5,9 @@ All systems process the same CTI documents, and outputs are scored
 with the SAME evaluation function, no advantage to any system.
 
 Usage:
-    python eval_head_to_head.py --max-docs 20
-    python eval_head_to_head.py --max-docs 20 --skip-nexus --skip-attackkg
-    python eval_head_to_head.py --max-docs 20 --skip-ctiforge --skip-nexus  # AttacKG+ only
+    python -m benchmarks.eval_head_to_head --max-docs 20
+    python -m benchmarks.eval_head_to_head --max-docs 20 --skip-nexus --skip-attackkg
+    python -m benchmarks.eval_head_to_head --max-docs 20 --skip-ctiforge --skip-nexus  # AttacKG+ only
 """
 
 from __future__ import annotations
@@ -23,7 +23,7 @@ from src.pipeline import Pipeline, PipelineConfig
 from src.ingestion.loaders import load_ctinexus_dataset
 from src.schema.relations import Triple, ValidationStatus, RelationType, normalize_relation
 from src.schema.entities import EntityType
-from eval_ctinexus_decomposed import (
+from benchmarks.eval_ctinexus_decomposed import (
     compute_phase1_triplet_f1,
     compute_phase1_subject_object_f1,
     compute_phase2a_entity_type_f1,

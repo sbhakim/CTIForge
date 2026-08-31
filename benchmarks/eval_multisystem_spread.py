@@ -23,8 +23,8 @@ that need a normalised relation, which is itself one of the variables measured.
 Matching is scoped per document (see src/evaluation/per_document.py for why).
 
 Usage:
-    conda run -n cti python eval_multisystem_spread.py
-    conda run -n cti python eval_multisystem_spread.py --no-embed
+    conda run -n cti python -m benchmarks.eval_multisystem_spread
+    conda run -n cti python -m benchmarks.eval_multisystem_spread --no-embed
 """
 
 from __future__ import annotations
@@ -36,8 +36,8 @@ import json
 import os
 from pathlib import Path
 
-from eval_ctinexus_decomposed import _names_match, _normalize
-from eval_matcher_vs_human import _COMPAT, _norm_rel, _rels_compat
+from benchmarks.eval_ctinexus_decomposed import _names_match, _normalize
+from benchmarks.eval_matcher_vs_human import _COMPAT, _norm_rel, _rels_compat
 
 GRID_ROOT = Path(__file__).resolve().parent.parent / "Codes" / "ProjectGRID"
 

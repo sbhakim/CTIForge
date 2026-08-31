@@ -18,7 +18,7 @@ Predicted triples are persisted per arm, which also unblocks the flag
 calibration study and post-hoc error attribution without another run.
 
 Usage:
-    conda run -n cti python eval_module_ablation.py --config configs/openrouter-minimax.yaml \
+    conda run -n cti python -m benchmarks.eval_module_ablation --config configs/reported/openrouter-minimax.yaml \
         --max-docs 149 -o output/paper/ablation_149_m3
 """
 
@@ -29,7 +29,7 @@ import json
 import time
 from pathlib import Path
 
-from eval_ctinexus_decomposed import (
+from benchmarks.eval_ctinexus_decomposed import (
     compute_phase1_triplet_f1,
     compute_phase1_subject_object_f1,
 )
@@ -73,7 +73,7 @@ def triple_record(t):
 
 def main():
     ap = argparse.ArgumentParser(description="Shared-extraction module ablation")
-    ap.add_argument("--config", default="configs/openrouter-minimax.yaml")
+    ap.add_argument("--config", default="configs/reported/openrouter-minimax.yaml")
     ap.add_argument("--max-docs", type=int, default=0)
     ap.add_argument("--annotations-dir", default="data/annotations/ctinexus")
     ap.add_argument("-o", "--output-dir", default="output/module_ablation")

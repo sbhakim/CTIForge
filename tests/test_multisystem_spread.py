@@ -6,7 +6,7 @@ fail silently rather than loudly if wrong.
 
 import pytest
 
-from eval_multisystem_spread import (
+from benchmarks.eval_multisystem_spread import (
     _as_list,
     f1_for,
     greedy_tp,

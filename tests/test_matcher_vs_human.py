@@ -8,7 +8,7 @@ wrong and neither fails loudly, so they are pinned here.
 
 import pytest
 
-from eval_matcher_vs_human import (
+from benchmarks.eval_matcher_vs_human import (
     _coerce_graph,
     p_exact,
     p_name_soft_compat,

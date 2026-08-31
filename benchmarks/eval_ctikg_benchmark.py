@@ -5,7 +5,7 @@ This script runs our pipeline on the 255 CTI sentences from the CTIKG benchmark
 and compares our results against both the gold annotations and CTIKG's outputs.
 
 Usage:
-    python eval_ctikg_benchmark.py [--max-sentences N] [-o output_dir]
+    python -m benchmarks.eval_ctikg_benchmark [--max-sentences N] [-o output_dir]
 """
 
 from __future__ import annotations

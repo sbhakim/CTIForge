@@ -1,7 +1,7 @@
 """Protocol-sensitivity harness: hold predictions fixed, vary only the matcher.
 
 Run from the CTIForge repo root:
-    conda run -n cti python eval_protocol_spread.py
+    conda run -n cti python -m benchmarks.eval_protocol_spread
 
 Reports F1 for each cached prediction set under 7 matching protocols,
 including the embedding matcher used by TACTIC-KG (ESORICS 2026).
@@ -10,7 +10,7 @@ import json,sys
 from pathlib import Path
 import numpy as np
 from scipy.optimize import linear_sum_assignment
-from eval_ctinexus_decomposed import _normalize,_names_match
+from benchmarks.eval_ctinexus_decomposed import _normalize,_names_match
 from src.ingestion.loaders import load_ctinexus_dataset
 from src.schema.relations import Triple
 from sentence_transformers import SentenceTransformer

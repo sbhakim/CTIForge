@@ -13,7 +13,7 @@ whether each matched a gold triple. A removal is CORRECT when the dropped
 triple matched nothing in gold.
 
 Usage:
-    conda run -n cti python analyze_validation_removals.py output/paper/ablation_149_*
+    conda run -n cti python -m benchmarks.analyze_validation_removals output/paper/ablation_149_*
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ import argparse
 import json
 from pathlib import Path
 
-from eval_ctinexus_decomposed import compute_phase1_triplet_f1
+from benchmarks.eval_ctinexus_decomposed import compute_phase1_triplet_f1
 from src.ingestion.loaders import load_ctinexus_dataset
 
 

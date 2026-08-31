@@ -8,7 +8,7 @@ This provides comparable metrics to CTI-Nexus's reported numbers:
   Phase 3: Overall end-to-end triple F1
 
 Usage:
-    python eval_ctinexus_decomposed.py [--max-docs N] [-o output_dir]
+    python -m benchmarks.eval_ctinexus_decomposed [--max-docs N] [-o output_dir]
 """
 
 from __future__ import annotations

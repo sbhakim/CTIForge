@@ -27,8 +27,8 @@ report agreement with the human label. GRID's own judge agreement (86.0%
 overall, 80.6% precision / 91.4% recall) is the reference point.
 
 Usage:
-    conda run -n cti python eval_matcher_vs_human.py
-    conda run -n cti python eval_matcher_vs_human.py --no-embed   # skip ST model
+    conda run -n cti python -m benchmarks.eval_matcher_vs_human
+    conda run -n cti python -m benchmarks.eval_matcher_vs_human --no-embed   # skip ST model
 """
 
 from __future__ import annotations
@@ -38,7 +38,7 @@ import json
 from collections import Counter
 from pathlib import Path
 
-from eval_ctinexus_decomposed import _names_match, _normalize
+from benchmarks.eval_ctinexus_decomposed import _names_match, _normalize
 from src.schema.relations import normalize_relation
 
 CALIBRATION_DIR = (

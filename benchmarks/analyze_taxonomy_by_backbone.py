@@ -16,7 +16,7 @@ Reads the B+C arm's log from each run. `eval_error_taxonomy.py` expects
 paths are resolved here instead.
 
 Usage:
-    conda run -n cti python analyze_taxonomy_by_backbone.py
+    conda run -n cti python -m benchmarks.analyze_taxonomy_by_backbone
 """
 
 from __future__ import annotations
