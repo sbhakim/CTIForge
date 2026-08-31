@@ -45,8 +45,8 @@ If you only want to reproduce scoring and not extraction, none of that is
 needed — the scoring harnesses run on cached predictions on a laptop.
 
 Extraction goes through LiteLLM, so OpenAI, Anthropic, Google, DeepSeek,
-OpenRouter, and local HuggingFace models all work. `configs/` has a starting
-point for each.
+OpenRouter, and local HuggingFace models all work. `configs/reported/` contains
+the configurations used for the published evaluations.
 
 ## Data
 
@@ -59,8 +59,8 @@ The evaluation corpora are third-party and not redistributed here.
 Put them where the configs expect them: `data/annotations/ctinexus/` and
 `data/external/mitre.jsonl`.
 
-The ten-system prediction cache used by `eval_multisystem_spread.py`, and the
-adjudicated items used by `eval_matcher_vs_human.py`, both come from the GRID
+The ten-system prediction cache used by `benchmarks/eval_multisystem_spread.py`, and the
+adjudicated items used by `benchmarks/eval_matcher_vs_human.py`, both come from the GRID
 release. They are not redistributed here; the scripts expect them at the paths
 named at the top of each file. Every system in that cache was run on the same
 extraction model, which is why it is usable for comparing matchers and not for
@@ -94,7 +94,7 @@ python main.py --config configs/default.yaml ablation --max-docs 20 -o output/ab
 
 `scripts/` wraps the common cases.
 
-Note that `eval_head_to_head.py` caches extracted triples per system. After
+Note that `benchmarks/eval_head_to_head.py` caches extracted triples per system. After
 changing pipeline code, delete `<output-dir>/ctiforge_cached_triples.json` or you
 will silently score the previous run.
 
@@ -102,21 +102,21 @@ will silently score the previous run.
 
 | Script | What it produces | Needs |
 |---|---|---|
-| `eval_ctinexus_decomposed.py` | Triplet and subject–object metrics on CTI-Nexus, per document and pooled | extraction |
-| `eval_module_ablation.py` | B / B+C / B+C+D from one shared extraction pass, plus per-arm predictions | extraction |
-| `eval_protocol_spread.py` | One prediction set scored under seven matchers — the 0.16–0.70 span | cached preds |
-| `eval_multisystem_spread.py` | Ten systems × eight protocols; counts rank reversals | GRID cache |
-| `eval_matcher_vs_human.py` | Agreement of each matcher with human adjudication | GRID labels |
-| `eval_error_taxonomy.py` | Validator actions by category and by action taken | a run's logs |
-| `eval_ctikg_benchmark.py` | Comparison against CTIKG on its 255-sentence set | extraction |
-| `eval_head_to_head.py` | Matched-backbone comparison with CTI-Nexus and AttacKG+ | extraction |
-| `structural_metrics.py` | Evidence presence, schema compliance, duplicate rate | cached preds |
+| `benchmarks/eval_ctinexus_decomposed.py` | Triplet and subject–object metrics on CTI-Nexus, per document and pooled | extraction |
+| `benchmarks/eval_module_ablation.py` | B / B+C / B+C+D from one shared extraction pass, plus per-arm predictions | extraction |
+| `benchmarks/eval_protocol_spread.py` | One prediction set scored under seven matchers — the 0.16–0.70 span | cached preds |
+| `benchmarks/eval_multisystem_spread.py` | Ten systems × eight protocols; counts rank reversals | GRID cache |
+| `benchmarks/eval_matcher_vs_human.py` | Agreement of each matcher with human adjudication | GRID labels |
+| `benchmarks/eval_error_taxonomy.py` | Validator actions by category and by action taken | a run's logs |
+| `benchmarks/eval_ctikg_benchmark.py` | Comparison against CTIKG on its 255-sentence set | extraction |
+| `benchmarks/eval_head_to_head.py` | Matched-backbone comparison with CTI-Nexus and AttacKG+ | extraction |
+| `benchmarks/structural_metrics.py` | Evidence presence, schema compliance, duplicate rate | cached preds |
 
 The four in the middle need no model calls. They re-score predictions that are
 already on disk, so they finish in minutes and cost nothing — start there if you
 want to check the protocol-sensitivity results without running extraction.
 
-`eval_module_ablation.py` runs extraction once and derives all three arms from it.
+`benchmarks/eval_module_ablation.py` runs extraction once and derives all three arms from it.
 That matters: run the arms separately and they differ by a fresh sampling of the
 model as well as by the module you meant to test.
 
@@ -158,7 +158,8 @@ src/
   evaluation/    metrics, per-document scoping, schema-neutral scoring
   schema/        14 entity types, 12 relation types, type-pair constraints
 prompts/         Jinja2 templates for extraction, recovery, link prediction
-configs/         provider and pipeline configs
+configs/         default and reported-run configurations
+benchmarks/      paper evaluation and reproduction entry points
 tests/
 scripts/
 ```
