@@ -133,13 +133,17 @@ def parse_extraction_response(
         if not isinstance(rt, dict):
             continue
 
-        subject = _clean_entity_name(rt.get("subject", "").strip())
-        object_ = _clean_entity_name(rt.get("object", "").strip())
+        # `dict.get(k, default)` returns the default only when the key is
+        # ABSENT. A key present with an explicit JSON null returns None, and
+        # None.strip() raises -- which killed a full 149-document run when
+        # Gemma-2-9B emitted {"object": null}. `or` covers both cases.
+        subject = _clean_entity_name((rt.get("subject") or "").strip())
+        object_ = _clean_entity_name((rt.get("object") or "").strip())
         if not subject or not object_:
             continue
 
-        subject_type = _resolve_entity_type(rt.get("subject_type", "Other"))
-        object_type = _resolve_entity_type(rt.get("object_type", "Other"))
+        subject_type = _resolve_entity_type(rt.get("subject_type") or "Other")
+        object_type = _resolve_entity_type(rt.get("object_type") or "Other")
         raw_relation = (rt.get("relation") or "related_to").strip()
         relation = _resolve_relation_type(raw_relation)
         evidence = (rt.get("evidence") or rt.get("evidence_text") or "").strip()

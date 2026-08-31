@@ -63,6 +63,8 @@ class PipelineConfig:
         self.temperature: float = llm_cfg.get("temperature", 0.1)
         self.max_tokens: int = llm_cfg.get("max_tokens", 4096)
         self.retry_attempts: int = llm_cfg.get("retry_attempts", 1)
+        self.cloud_timeout: int = llm_cfg.get("timeout", 120)
+        self.max_rpm: float | None = llm_cfg.get("max_rpm")
         structured_output_cfg = llm_cfg.get("structured_output", {})
         self.cloud_response_format: dict | None = None
         if structured_output_cfg.get("enabled", False):
@@ -76,6 +78,7 @@ class PipelineConfig:
         self.local_do_sample: bool = local_llm_cfg.get("do_sample", False)
         self.local_max_new_tokens: int = local_llm_cfg.get("max_new_tokens", 1280)
         self.local_prompt_template: str | None = local_llm_cfg.get("prompt_template")
+        self.local_max_triples: int = local_llm_cfg.get("max_triples", 10)
         self.max_chunk_chars: int = raw.get("extraction", {}).get("max_chunk_chars", 2000)
         self.overlap_chars: int = raw.get("extraction", {}).get("overlap_chars", 200)
         self.max_sentences_per_chunk: int = raw.get("extraction", {}).get(
@@ -237,6 +240,9 @@ class Pipeline:
                 local_do_sample=self.config.local_do_sample,
                 local_max_new_tokens=self.config.local_max_new_tokens,
                 local_prompt_template=self.config.local_prompt_template,
+                local_max_triples=self.config.local_max_triples,
+                cloud_timeout=self.config.cloud_timeout,
+                max_rpm=self.config.max_rpm,
             )
         else:
             self.extractor = None
@@ -398,7 +404,14 @@ class Pipeline:
         )
         return True
 
-    def process_document(self, doc: CTIDocument) -> tuple[CTIGraph, list[Triple]]:
+    def extract_document(self, doc: CTIDocument) -> tuple[CTIDocument, list[Triple]]:
+        """Modules A and B plus link prediction: every stage that calls the LLM.
+
+        Split out of process_document so that ablation arms can share a single
+        extraction pass. Run separately, arms would differ by both the module
+        under test and a fresh sampling of the model, and that resampling noise
+        is the same size as the effect being measured.
+        """
         """Run the pipeline on a single document.
 
         Returns:
@@ -416,7 +429,7 @@ class Pipeline:
 
         if not doc.chunks:
             logger.warning(f"No chunks produced for {doc.doc_id}")
-            return CTIGraph(source_documents=[doc.doc_id]), []
+            return doc, []
 
         # Module B: Extract
         if self.extractor:
@@ -626,7 +639,16 @@ class Pipeline:
             if guided_triples:
                 logger.info(f"Guided re-extraction: +{len(guided_triples)} triples")
                 raw_triples.extend(guided_triples)
+        return doc, raw_triples
 
+    def postprocess(
+        self, raw_triples: list[Triple], doc: CTIDocument
+    ) -> tuple[CTIGraph, list[Triple]]:
+        """Everything downstream of extraction: validation, filtering, grounding.
+
+        Deterministic given its input, which is what makes the shared-extraction
+        ablation valid.
+        """
         all_triples = raw_triples
 
         # Module C: Validate
@@ -663,6 +685,18 @@ class Pipeline:
         )
 
         return graph, all_triples
+
+    def process_document(self, doc: CTIDocument) -> tuple[CTIGraph, list[Triple]]:
+        """Run the pipeline on a single document.
+
+        Returns:
+            (CTIGraph, list of all triples including rejected)
+        """
+        doc, raw_triples = self.extract_document(doc)
+        if not doc.chunks:
+            return CTIGraph(source_documents=[doc.doc_id]), []
+        return self.postprocess(raw_triples, doc)
+
 
     def _ground_attack_techniques(self, triples: list[Triple]) -> list[Triple]:
         """Attach ATT&CK technique IDs and normalize exact ATT&CK technique names."""

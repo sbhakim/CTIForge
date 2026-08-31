@@ -206,9 +206,10 @@ class LinkPredictor:
         if data.get("skip"):
             return None
 
-        subj = data.get("subject", "").strip()
-        obj = data.get("object", "").strip()
-        rel = data.get("relation", "related_to").strip()
+        # See output_parser: an explicit JSON null defeats get()'s default.
+        subj = (data.get("subject") or "").strip()
+        obj = (data.get("object") or "").strip()
+        rel = (data.get("relation") or "related_to").strip()
         evidence = data.get("evidence", "")
 
         if not subj or not obj:

@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import re
+import time
 from pathlib import Path
 from typing import Any
 
 import jinja2
+import litellm
 from litellm import completion
 
 from src.schema.graph_schema import Chunk
@@ -34,6 +36,9 @@ class Extractor:
         local_do_sample: bool = False,
         local_max_new_tokens: int = 1280,
         local_prompt_template: str | None = None,
+        local_max_triples: int = 10,
+        cloud_timeout: int = 120,
+        max_rpm: float | None = None,
         prompts_dir: str | Path = "prompts",
         raw_output_dir: str | Path = "output/debug_raw_generations",
     ):
@@ -49,6 +54,17 @@ class Extractor:
         self.local_do_sample = local_do_sample
         self.local_max_new_tokens = max(local_max_new_tokens, 64)
         self.local_prompt_template = local_prompt_template
+        # Cap stated inside the local JSON wrapper. Default 10 preserves the
+        # behaviour every existing local config was measured under; raise it to
+        # match the hosted prompt when comparing backbones.
+        self.local_max_triples = max(1, local_max_triples)
+        # Per-request client timeout. Reasoning backbones need more than the
+        # 120s that sufficed for GPT-4o-class models.
+        self.cloud_timeout = max(1, int(cloud_timeout))
+        # Client-side request pacing. None means unthrottled, which is what
+        # every run before this change used.
+        self._min_call_interval = 60.0 / max_rpm if max_rpm else 0.0
+        self._last_call_at = 0.0
         self._local_tokenizer: Any | None = None
         self._local_model: Any | None = None
         self.raw_output_dir = Path(raw_output_dir)
@@ -194,7 +210,7 @@ class Extractor:
             "- Output JSON only.\n"
             "- No markdown fences.\n"
             "- No explanation.\n"
-            "- Extract at most 10 of the strongest fully supported triples.\n"
+            f"- Extract at most {self.local_max_triples} of the strongest fully supported triples.\n"
             "- If nothing is supported, return {\"triples\": []}.\n\n"
             f"{prompt}\n\n"
             "JSON:"
@@ -225,7 +241,7 @@ class Extractor:
         compact_max_triples: int = 8,
     ) -> str:
         examples = few_shot_examples or []
-        if self.provider == "local_mistral" and self.local_extraction_template is not None:
+        if self.local_extraction_template is not None and self._uses_local_backend():
             return self.local_extraction_template.render(
                 text=text,
                 few_shot_examples=examples,
@@ -276,13 +292,27 @@ class Extractor:
         # do not expose `tokenizer.chat_template`. In that case we fall back to a
         # plain instruction-style prompt while keeping the original logic intact.
         if getattr(tokenizer, "chat_template", None):
-            encoded = tokenizer.apply_chat_template(
-                messages,
-                tokenize=True,
-                add_generation_prompt=True,
-                return_tensors="pt",
-                return_dict=True,
-            )
+            try:
+                encoded = tokenizer.apply_chat_template(
+                    messages,
+                    tokenize=True,
+                    add_generation_prompt=True,
+                    return_tensors="pt",
+                    return_dict=True,
+                )
+            except Exception:
+                # Gemma and a few others reject the system role outright. Fold
+                # the system text into the user turn rather than losing it.
+                encoded = tokenizer.apply_chat_template(
+                    [{
+                        "role": "user",
+                        "content": f"{self.local_system_prompt}\n\n{local_prompt}",
+                    }],
+                    tokenize=True,
+                    add_generation_prompt=True,
+                    return_tensors="pt",
+                    return_dict=True,
+                )
         else:
             encoded = tokenizer(
                 local_prompt,
@@ -318,6 +348,34 @@ class Extractor:
         generated = output_ids[0][input_ids.shape[-1]:]
         return tokenizer.decode(generated, skip_special_tokens=True).strip()
 
+    def _throttle(self) -> None:
+        """Space outbound requests to respect a provider RPM ceiling.
+
+        No-op unless `max_rpm` was configured, so unthrottled backbones keep
+        the exact timing every earlier run used.
+        """
+        if self._min_call_interval <= 0:
+            return
+        wait = self._last_call_at + self._min_call_interval - time.monotonic()
+        if wait > 0:
+            time.sleep(wait)
+        self._last_call_at = time.monotonic()
+
+    @staticmethod
+    def _is_response_format_rejection(exc: Exception) -> bool:
+        """True only when the provider rejected `response_format` itself.
+
+        Dropping JSON mode cannot fix a rate limit, a timeout, or a bad
+        temperature, and retrying those here doubles the request count against
+        the provider's quota -- which is what made a 3 RPM ceiling unworkable.
+        """
+        if isinstance(exc, getattr(litellm, "UnsupportedParamsError", ())):
+            return True
+        if isinstance(exc, getattr(litellm, "BadRequestError", ())):
+            text = str(exc).lower()
+            return "response_format" in text or "json" in text
+        return False
+
     def _complete_cloud(
         self,
         prompt: str,
@@ -333,15 +391,16 @@ class Extractor:
             ],
             "temperature": self.temperature if temperature is None else temperature,
             "max_tokens": self.max_tokens if max_tokens is None else max_tokens,
-            "timeout": 120,
+            "timeout": self.cloud_timeout,
         }
         if self.cloud_response_format is not None:
             request_kwargs["response_format"] = self.cloud_response_format
 
+        self._throttle()
         try:
             response = completion(**request_kwargs)
         except Exception as e:
-            if self.cloud_response_format is None:
+            if self.cloud_response_format is None or not self._is_response_format_rejection(e):
                 raise
             logger.warning(
                 "Cloud completion with response_format failed for %s; retrying without JSON mode: %s",
@@ -349,6 +408,7 @@ class Extractor:
                 e,
             )
             request_kwargs.pop("response_format", None)
+            self._throttle()
             response = completion(**request_kwargs)
         return response.choices[0].message.content or ""
 
@@ -434,6 +494,12 @@ class Extractor:
                     self.retry_attempts,
                     e,
                 )
+                # Immediate retry is useless against a rate limit and simply
+                # burns another request. Back off only between attempts, and
+                # only when pacing is configured, so unthrottled runs are
+                # unchanged.
+                if self._min_call_interval > 0 and attempt < self.retry_attempts:
+                    time.sleep(self._min_call_interval * (2 ** (attempt - 1)))
 
         if not raw_output:
             logger.error(f"LLM call failed for chunk {chunk.chunk_id}: {last_error}")
