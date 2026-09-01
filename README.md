@@ -1,4 +1,13 @@
-# CTIForge
+<div align="center">
+  <h1>CTIForge</h1>
+  <h2>Ranked by the Matcher: A Reproducibility Audit of Knowledge Graph Extraction from Threat Reports</h2>
+  <p>
+    <img src="https://img.shields.io/badge/Paper-arXiv%20pending-B31B1B" alt="Paper: arXiv pending">
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-6B7280" alt="License: MIT"></a>
+  </p>
+</div>
+
+---
 
 CTIForge builds cyber-threat-intelligence knowledge graphs from unstructured
 reports. An LLM proposes typed triples; deterministic validation, grounding,
@@ -124,6 +133,11 @@ prompts/                extraction and recovery templates
 scripts/                common shell wrappers
 tests/                  offline regression tests
 ```
+
+## Contact
+
+Please open an issue for project questions or contact Safayat Bin Hakim at
+`safayat DOT b DOT hakim AT gmail DOT com`.
 
 ## License
 
