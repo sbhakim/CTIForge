@@ -412,8 +412,7 @@ def main():
     out = Path(args.output_dir)
     out.mkdir(parents=True, exist_ok=True)
     write_json(results, out / "ctinexus_decomposed_results.json")
-    # Persist the validator's error taxonomy alongside the metrics, so the
-    # taxonomy reported in the paper has an artifact behind it at benchmark scale.
+    # Persist the validator taxonomy alongside the metrics.
     pipeline.error_logger.save(out / "error_taxonomy")
 
     # Print results

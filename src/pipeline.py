@@ -120,8 +120,7 @@ class PipelineConfig:
         lp_cfg = raw.get("link_prediction", {})
         self.enable_link_prediction: bool = lp_cfg.get("enabled", True)
         self.max_lp_predictions: int = lp_cfg.get("max_predictions", 5)
-        # Experimental hook: keep disabled in production configs unless a
-        # targeted benchmark shows that recovery-heavy documents benefit.
+        # Optional recovery stages are enabled only by explicit configuration.
         self.lp_skip_if_recovery_share_at_least: float | None = lp_cfg.get(
             "skip_if_recovery_share_at_least"
         )
@@ -282,7 +281,7 @@ class Pipeline:
         # Module E: Merger
         self.merger = GraphMerger(min_confidence=self.config.min_confidence)
 
-        # Link Prediction (Nexus-inspired)
+        # Link prediction
         if self.enable_link_prediction and self.enable_extraction:
             self.link_predictor = LinkPredictor(
                 provider=self.config.model_provider,
@@ -294,7 +293,7 @@ class Pipeline:
         else:
             self.link_predictor = None
 
-        # Entity Alignment (Nexus-inspired)
+        # Entity alignment
         if self.enable_entity_alignment:
             self.entity_aligner = EntityAligner(
                 similarity_threshold=self.config.similarity_threshold,
@@ -662,7 +661,7 @@ class Pipeline:
         if self.confidence_rescorer:
             all_triples = self.confidence_rescorer.rescore_and_prune(all_triples)
 
-        # Saliency filter: keep only the most important triples
+        # Saliency filter
         if self.saliency_filter:
             all_triples = self.saliency_filter.filter_triples(all_triples)
 

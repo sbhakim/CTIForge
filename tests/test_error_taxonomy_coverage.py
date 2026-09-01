@@ -1,7 +1,6 @@
 """Coverage guard for the error taxonomy.
 
-The manuscript lists a 14-category taxonomy as a contribution, described as "an
-empirically grounded characterization of where and how LLM extraction fails".
+The public taxonomy contains 14 categories describing where extraction fails.
 Across the archived run logs only 8 categories ever fire, and 3 of the 14 have
 no call site anywhere in src/, so they cannot fire at all.
 
@@ -9,8 +8,8 @@ These tests pin the current state so that:
   - wiring up a dead category (good) fails loudly and prompts a doc update;
   - adding a new dead category (bad) fails loudly.
 
-They do not assert that the dead categories are acceptable. They are not; either
-implement them or drop them from the paper's count.
+They do not assert that unused categories are acceptable; each should eventually
+be implemented or removed from the taxonomy.
 """
 
 from pathlib import Path
@@ -64,7 +63,7 @@ def test_dead_category_set_has_not_changed():
     dead = {v for k, v in _declared().items() if _call_sites(k) == 0}
     assert dead == KNOWN_DEAD, (
         f"Dead-category set changed: {dead} != {KNOWN_DEAD}. "
-        "Update the manuscript's category count and this test together."
+        "Update the category count and this test together."
     )
 
 

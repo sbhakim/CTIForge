@@ -273,21 +273,8 @@ class Extractor:
             {"role": "user", "content": local_prompt},
         ]
 
-        # Preserve the original chat-template-based path for models/tokenizers
-        # that define one. This worked for Qwen and should remain the preferred
-        # route when available.
-        #
-        # Previous implementation:
-        # encoded = tokenizer.apply_chat_template(
-        #     messages,
-        #     tokenize=True,
-        #     add_generation_prompt=True,
-        #     return_tensors="pt",
-        #     return_dict=True,
-        # )
-        # input_ids = encoded["input_ids"]
-        # attention_mask = encoded.get("attention_mask")
-        #
+        # Use the tokenizer's chat template when available.
+
         # Some cached local models (for example the current Llama 3.1 tokenizer)
         # do not expose `tokenizer.chat_template`. In that case we fall back to a
         # plain instruction-style prompt while keeping the original logic intact.

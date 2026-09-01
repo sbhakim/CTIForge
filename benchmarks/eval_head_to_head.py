@@ -625,10 +625,7 @@ def main():
         cache_data = {did: [t.model_dump() for t in ts] for did, ts in sg_pred_all.items()}
         with open(sg_cache, 'w') as f:
             json.dump(cache_data, f, indent=2, default=str)
-        # Persist the validator's error taxonomy. Without this the manuscript's
-        # taxonomy claim has no artifact behind it for benchmark-scale runs --
-        # error_logger.save() was previously only reached from main.py / cli.py,
-        # never from the scripts that produce the paper's tables.
+        # Persist the validator taxonomy for benchmark-scale runs.
         pipeline.error_logger.save(out / "error_taxonomy")
     else:
         sg_cache = out / "ctiforge_cached_triples.json"
@@ -833,7 +830,6 @@ def main():
 
     for label, getter in metrics:
         if getter is None:
-            # Section separator
             if label != "---":
                 print(f"\n  {label}")
             continue

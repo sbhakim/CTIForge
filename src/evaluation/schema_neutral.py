@@ -54,7 +54,7 @@ CTIFORGE_TO_STIX: dict[str, str] = {
 # Source: OASIS STIX 2.1 spec, SRO relationship definitions.
 # Each entry: relation -> (valid source SDO types, valid target SDO types)
 #
-# NOTE: this is deliberately a *subset*. Relations whose STIX domain/range we
+# This is deliberately a subset. Relations whose STIX domain/range we
 # cannot state confidently are omitted and excluded from scoring rather than
 # guessed at, see UNSCORED below.
 STIX_RELATIONSHIP_CONSTRAINTS: dict[str, tuple[frozenset[str], frozenset[str]]] = {

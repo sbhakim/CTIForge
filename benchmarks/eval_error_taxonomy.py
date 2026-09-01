@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
 """Aggregate the symbolic validator's error taxonomy into a reportable table.
 
-The manuscript's RQ3 currently summarises the taxonomy qualitatively, on the
-grounds that a single snapshot depends on which configuration is scored. That is
-true but it is not a reason to omit the numbers: the variation *between*
-configurations is itself the finding, because canonicalisation (Module D)
-silences a subset of what validation (Module C) flags.
+The taxonomy varies with the scored configuration: canonicalisation (Module D)
+silences a subset of what validation (Module C) flags. This script preserves
+that variation rather than collapsing runs into one snapshot.
 
 This aggregates one or more runs' `error_taxonomy/error_log.jsonl` into a
 per-category table with counts, share, and the action distribution
 (rejected / repaired / flagged) for each category.
 
-`error_logger.save()` used to be reached only from main.py and src/cli.py, so
-the benchmark scripts never wrote a log. All three evaluators persist it now.
+Benchmark evaluators persist the same log format used by the main pipeline.
 
 Usage:
     conda run -n cti python -m benchmarks.eval_error_taxonomy output/<run>
@@ -28,7 +25,7 @@ import json
 from collections import Counter, defaultdict
 from pathlib import Path
 
-# The 14 categories declared by ErrorCategory, in the order the paper uses.
+# The categories declared by ErrorCategory, in a stable reporting order.
 CATEGORIES = [
     "confidence_lowered", "type_misassignment", "impossible_type_pair",
     "generic_placeholder", "hallucinated_entity", "missing_evidence",

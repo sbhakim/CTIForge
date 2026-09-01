@@ -74,33 +74,6 @@ def parse_extraction_response(
     - trailing commas
     - partial/malformed JSON
     """
-    # Previous parser path kept here for reference. It handled clean JSON and
-    # simple fenced outputs well, but it returned [] too early on truncated
-    # provider responses such as partial OpenRouter Mistral payloads.
-    #
-    # cleaned = raw_response.strip()
-    # cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
-    # cleaned = re.sub(r"\s*```$", "", cleaned)
-    # cleaned = re.sub(r"^\s*JSON\s*:\s*", "", cleaned, flags=re.IGNORECASE)
-    # try:
-    #     data = json.loads(cleaned)
-    # except json.JSONDecodeError:
-    #     match = re.search(r"\{[\s\S]*\}", cleaned)
-    #     if match:
-    #         try:
-    #             data = json.loads(match.group())
-    #         except json.JSONDecodeError:
-    #             repaired = _repair_json_like_text(match.group())
-    #             if repaired is None:
-    #                 logger.warning(
-    #                     f"Failed to parse extraction response for {source_chunk_id}"
-    #                 )
-    #                 return []
-    #             data = repaired
-    #     else:
-    #         logger.warning(f"No JSON found in extraction response for {source_chunk_id}")
-    #         return []
-
     cleaned = _strip_json_wrappers(raw_response)
     data: dict | None = None
 
@@ -612,7 +585,7 @@ def _clean_entity_name(name: str) -> str:
         "",
         name,
     )
-    # Strip verbose LLM-generated qualifiers that gold annotations don't use
+    # Strip verbose qualifiers that gold annotations do not use
     # e.g., "threat actors to execute arbitrary malicious code" → "arbitrary malicious code"
     name = re.sub(r"^(?:threat actors? to execute|attackers? to execute|allows? (?:attackers?|threat actors?) to (?:execute|run|deploy))\s+", "", name, flags=re.IGNORECASE)
     return name.strip()
