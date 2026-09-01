@@ -2,7 +2,9 @@
 
 CTIForge builds cyber-threat-intelligence knowledge graphs from unstructured
 reports. An LLM proposes typed triples; deterministic validation, grounding,
-and provenance-preserving fusion make the resulting graph inspectable.
+and provenance-preserving fusion make the resulting graph inspectable. The
+pipeline preserves evidence, records rule decisions, and supports reproducible
+evaluation across multiple extraction backbones.
 
 ## Install
 
