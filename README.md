@@ -1,4 +1,5 @@
 <div align="center">
+  <img src="docs/assets/ctiforge-logo.png" alt="CTIForge logo" width="180">
   <h1>CTIForge</h1>
   <h2>Ranked by the Matcher: A Reproducibility Audit of Knowledge Graph Extraction from Threat Reports</h2>
   <p>

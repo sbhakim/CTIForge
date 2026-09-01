@@ -169,6 +169,7 @@ prof/
 *.pdf
 *.eps
 !docs/assets/ctiforge-architecture.png
+!docs/assets/ctiforge-logo.png
 
 # pyvis dumps these next to the graphs
 lib/
