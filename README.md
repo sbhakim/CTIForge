@@ -1,6 +1,5 @@
 <div align="center">
-  <img src="docs/assets/ctiforge-logo.png" alt="CTIForge logo" width="180">
-  <h1>CTIForge</h1>
+  <img src="docs/assets/ctiforge-logo.png" alt="CTIForge" width="260">
   <h2>Ranked by the Matcher: A Reproducibility Audit of Knowledge Graph Extraction from Threat Reports</h2>
   <p>
     <img src="https://img.shields.io/badge/Paper-arXiv%20pending-B31B1B" alt="Paper: arXiv pending">
