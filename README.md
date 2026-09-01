@@ -6,6 +6,27 @@ and provenance-preserving fusion make the resulting graph inspectable. The
 pipeline preserves evidence, records rule decisions, and supports reproducible
 evaluation across multiple extraction backbones.
 
+[Architecture](#architecture) · [Quick start](#quick-start) ·
+[Reported evaluations](#reproduce-the-reported-evaluations) · [Tests](#tests)
+
+## Architecture
+
+<p align="center">
+  <img src="docs/assets/ctiforge-architecture.png" alt="CTIForge architecture" width="900">
+</p>
+
+The five-stage pipeline retains source positions during ingestion, proposes
+evidence-linked triples, records deterministic validation decisions, grounds
+entities to aliases and ATT&amp;CK identifiers, and preserves origin and
+confidence during graph fusion.
+
+## What CTIForge provides
+
+- Evidence-linked typed-triple extraction from text and structured reports.
+- Deterministic validation and repair with explicit per-triple actions.
+- Alias-aware ATT&amp;CK grounding and provenance-preserving graph fusion.
+- Protocol-aware evaluation with document-scoped and pooled scoring.
+
 ## Install
 
 ```bash
@@ -18,6 +39,17 @@ cp .env.example .env       # add the provider key needed for extraction
 The command-line entry point is `python -m src.cli` (or `ctiforge` after an
 editable install). Extraction uses LiteLLM and supports hosted and local
 backbones. Scoring cached predictions does not require an API key.
+
+## Backends
+
+| Backend | Mode | Included configuration |
+|---|---|---|
+| OpenAI | Hosted | Default and reported |
+| Anthropic | Hosted | Reported |
+| OpenRouter | Hosted | Reported |
+| Qwen2.5, Mistral, Gemma 2 | Local | Reported |
+
+The exact paper-used presets are versioned under `configs/reported/`.
 
 ## Data
 
