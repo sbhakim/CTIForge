@@ -137,14 +137,12 @@ tests/                  offline regression tests
 ## Citation
 
 ```bibtex
-@misc{hakim2026rankedmatcherreproducibilityaudit,
-      title={Ranked by the Matcher: A Reproducibility Audit of Knowledge Graph Extraction from Threat Reports},
-      author={Safayat Bin Hakim and Houbing Herbert Song},
-      year={2026},
-      eprint={2609.01671},
-      archivePrefix={arXiv},
-      primaryClass={cs.CR},
-      url={https://arxiv.org/abs/2609.01671},
+@misc{hakim2026ranked,
+  title={Ranked by the Matcher: A Reproducibility Audit of Knowledge Graph Extraction from Threat Reports},
+  author={Safayat Bin Hakim and Houbing Herbert Song},
+  year={2026},
+  eprint={2609.01671},
+  archivePrefix={arXiv},
 }
 ```
 
