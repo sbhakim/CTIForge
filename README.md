@@ -1,8 +1,8 @@
 <div align="center">
-  <img src="docs/assets/ctiforge-logo.png" alt="CTIForge" width="260">
+  <img src="docs/assets/ctiforge-logo.png" alt="CTIForge" width="221">
   <h2>Ranked by the Matcher: A Reproducibility Audit of Knowledge Graph Extraction from Threat Reports</h2>
   <p>
-    <img src="https://img.shields.io/badge/Paper-arXiv%20pending-B31B1B" alt="Paper: arXiv pending">
+    <a href="https://arxiv.org/abs/2609.01671"><img src="https://img.shields.io/badge/arXiv-2609.01671-B31B1B" alt="arXiv:2609.01671"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-6B7280" alt="License: MIT"></a>
   </p>
 </div>
@@ -132,6 +132,20 @@ configs/                default and reported-run configurations
 prompts/                extraction and recovery templates
 scripts/                common shell wrappers
 tests/                  offline regression tests
+```
+
+## Citation
+
+```bibtex
+@misc{hakim2026rankedmatcherreproducibilityaudit,
+      title={Ranked by the Matcher: A Reproducibility Audit of Knowledge Graph Extraction from Threat Reports},
+      author={Safayat Bin Hakim and Houbing Herbert Song},
+      year={2026},
+      eprint={2609.01671},
+      archivePrefix={arXiv},
+      primaryClass={cs.CR},
+      url={https://arxiv.org/abs/2609.01671},
+}
 ```
 
 ## Contact
