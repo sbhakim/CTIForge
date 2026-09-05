@@ -101,9 +101,20 @@ under `output/`, which is intentionally ignored by Git.
 | Protocol sensitivity | `python -m benchmarks.eval_protocol_spread` | cached predictions |
 | Matcher/human calibration | `python -m benchmarks.eval_matcher_vs_human` | GRID labels |
 | Error taxonomy | `python -m benchmarks.eval_error_taxonomy output/<run>` | a pipeline run |
+| Pass-to-pass variance | `python -m benchmarks.analyze_seed_variance output/<run-set>` | repeated ablation runs |
+| Serving vs decoding | `python -m benchmarks.analyze_qwen_2x2` | Qwen2.5-7B run set |
 
 The module ablation extracts once and derives B, B+C, and B+C+D from the same
 triples. This isolates downstream module effects from fresh LLM sampling.
+
+The last two entries read a set of completed runs rather than one run.
+`analyze_seed_variance` reports the spread of the validation effect across
+repeated extraction passes on a single backbone. Because both arms of a pass
+share that pass's triples, the spread it reports is smaller than the spread of
+the arms themselves. `analyze_qwen_2x2` crosses serving with decoding on
+Qwen2.5-7B, the one backbone here that runs both locally and through a hosted
+endpoint, and reports the two main effects. Both write a JSON summary beside
+the runs they read.
 
 ## Scoring notes
 
