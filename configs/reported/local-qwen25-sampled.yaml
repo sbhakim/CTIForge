@@ -1,0 +1,88 @@
+# Qwen2.5-7B-Instruct locally, sampled at temperature 0.1 rather than greedy.
+#
+# Pairs with local-qwen25-hostedprompt.yaml, which is identical except that it
+# decodes greedily. Holding weights, prompt and every downstream stage fixed,
+# the pair isolates the decoding effect from everything else that differs
+# between a local and a hosted run.
+#
+# Like the greedy config, this uses the hosted extraction prompt rather than the
+# stricter local one: the local prompt asks for 4-10 triples per chunk against
+# the hosted 8-15, so a 7B recall figure taken under it is not separable from
+# the instruction it was given. max_triples is 15 to match rule 14 of that
+# prompt. Every pipeline block is stated explicitly, because a config that omits
+# one inherits defaults predating the precision-first design -- supplement
+# extraction, guided re-extraction and confidence rescoring on, saliency
+# filtering off -- which is the inverse of the shipped pipeline.
+
+llm:
+  provider: local_qwen25
+  models:
+    openai: gpt-4o
+    local_qwen25: huggingface/Qwen/Qwen2.5-7B-Instruct
+  temperature: 0.1
+  max_tokens: 4096
+  retry_attempts: 3
+  local:
+    system_prompt: "You extract cyber threat intelligence triples from incident reports."
+    do_sample: true
+    max_new_tokens: 1280
+    max_triples: 15
+
+embedding:
+  provider: local
+  models:
+    local: sentence-transformers/all-MiniLM-L6-v2
+  batch_size: 32
+
+extraction:
+  few_shot_examples: 3
+  max_chunk_chars: 2000
+  overlap_chars: 200
+  max_triples_per_chunk: 15
+
+validation:
+  reject_missing_evidence: true
+  reject_unsupported_by_evidence: true
+  max_triples_per_chunk: 15
+  min_entity_name_length: 2
+  min_confidence_threshold: 0.2
+
+canonicalization:
+  similarity_threshold: 0.85
+  use_alias_tables: true
+  merge_ioc_by_exact_match: true
+
+link_prediction:
+  enabled: true
+  max_predictions: 5
+
+entity_alignment:
+  enabled: true
+
+supplement_extraction:
+  enabled: false
+
+guided_reextraction:
+  enabled: false
+
+confidence_rescoring:
+  enabled: false
+  prune_threshold: 0.45
+
+saliency_filter:
+  enabled: true
+  max_triples_per_doc: 20
+
+relation_repair:
+  promote_associated_with: true
+  require_entity_mentions: false
+
+fusion:
+  min_confidence_for_merge: 0.5
+  preserve_provenance: true
+
+paths:
+  annotations: data/annotations/ctinexus
+  external: data/external
+  processed: data/processed
+  error_taxonomy: data/error_taxonomy
